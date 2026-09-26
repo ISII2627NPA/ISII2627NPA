@@ -1,0 +1,19 @@
+@startuml
+class Libro {
+    + Libro()
+    + Libro(titulo:string, precio:decimal, editorialId:int, generoId:int)
+    + Id : int <<get>> <<set>>
+    + Titulo : string <<get>> <<set>>
+    + Precio : decimal <<get>> <<set>>
+    + EditorialId : int <<get>> <<set>>
+    + GeneroId : int <<get>> <<set>>
+    + <<override>> Equals(obj:object?) : bool
+    + <<override>> GetHashCode() : int
+}
+
+ 
+Libro o-> "Editorial" Editorial
+Libro o-> "Genero" Genero
+Libro o-> "Editorial" Editorial
+Libro o-> "Genero" Genero
+@enduml
