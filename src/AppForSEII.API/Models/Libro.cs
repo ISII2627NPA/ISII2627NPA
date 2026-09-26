@@ -3,6 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace AppForSEII.API.Models
 {
+    // FIX: Se elimina la duplicidad de código y se corrigen los atributos Display conflictivos
     public class Libro
     {
         public Libro()
