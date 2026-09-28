@@ -19,7 +19,7 @@ namespace AppForSEII.API.Models
         [Key]
         public int Id { get; set; }
 
-        [System.ComponentModel.DataAnnotations.Display(Name = "Nombre del Género")]
+        
         [Required(AllowEmptyStrings = false, ErrorMessage = "El nombre del género es obligatorio")]
         public string Nombre { get; set; }
 
