@@ -1,0 +1,8 @@
+@startuml
+class PayPal {
+    + NumeroTelefono : string <<get>> <<set>>
+    + PayPal()
+    + <<override>> Equals(obj:object) : bool
+}
+MetodoPago <|-- PayPal
+@enduml
