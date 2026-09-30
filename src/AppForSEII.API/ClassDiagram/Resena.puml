@@ -1,10 +1,11 @@
 @startuml
 class Resena {
+    + Resena()
     + Id : int <<get>> <<set>>
     + Titulo : string <<get>> <<set>>
     + UsuarioId : string <<get>> <<set>>
-    + Resena()
+    + <<override>> Equals(obj:object?) : bool
+    + <<override>> GetHashCode() : int
 }
 Resena --> "FechaResena" DateTime
-Resena --> "Usuario" ApplicationUser
 @enduml

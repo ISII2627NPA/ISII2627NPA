@@ -1,4 +1,4 @@
 @startuml
 hide methods
-!include Team.puml
+!include ClassDiagram/Resena.puml
 @enduml
