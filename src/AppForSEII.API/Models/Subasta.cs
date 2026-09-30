@@ -15,6 +15,14 @@ namespace ISII2627NPA.Models
         [Required(ErrorMessage = "El precio de la subasta es obligatorio.")]
         public decimal PrecioSubasta { get; set; }
 
+        
+        //public IList<SubastaItem> SubastaItems { get; set; } = new List<SubastaItem>();   Descomentar luego
+        public string ApplicationUserId { get; set; }
+        public ApplicationUser Usuario { get; set; }
+
+        public int MetodoPagoId { get; set; }
+        //public MetodoPago MetodoPago { get; set; }     Descomentar luego
+
         public Subasta()
         {
         }
