@@ -1,8 +1,14 @@
 @startuml
 
+
+!include ./Genero.puml
+
 !include ./Libro.puml
 !include ./ApplicationUser.puml
+
+
 !include ./Editorial.puml
 !include ./MetodoPago.puml
+
 @enduml
 
