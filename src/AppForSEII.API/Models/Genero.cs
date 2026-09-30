@@ -8,22 +8,17 @@ namespace AppForSEII.API.Models
         public Genero()
         {
             Nombre = string.Empty;
-            // Libros = new List<Libro>(); // Desactivado temporalmente
-        }
-
-        public Genero(string nombre) 
-        {
-            Nombre = nombre;
+            //Libros = new List<Libro>(); 
         }
 
         [Key]
         public int Id { get; set; }
-
         
         [Required(AllowEmptyStrings = false, ErrorMessage = "El nombre del género es obligatorio")]
         public string Nombre { get; set; }
 
-        // public virtual IList<Libro> Libros { get; set; } // Desactivado temporalmente
+        // Relación 1:N con Libro 
+     //   public List<Libro> Libros { get; set; }
 
         public override bool Equals(object? obj)
         {
