@@ -1,0 +1,9 @@
+@startuml
+class Visa {
+    + NumeroTarjeta : string <<get>> <<set>>
+    + FechaCaducidad : DateTime <<get>> <<set>>
+    + Visa()
+    + <<override>> Equals(obj:object) : bool
+}
+MetodoPago <|-- Visa
+@enduml
