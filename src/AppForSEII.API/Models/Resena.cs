@@ -11,6 +11,13 @@ namespace AppForSEII.API.Models
         {
         }
 
+        public Resena(int id, DateTime fechaResena, string titulo)
+        {
+            Id = id;
+            FechaResena = fechaResena;
+            Titulo = titulo;
+        }
+
         [Key]
         public int Id { get; set; }
 

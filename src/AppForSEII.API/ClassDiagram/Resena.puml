@@ -2,10 +2,12 @@
 class Resena {
     + Resena()
     + Id : int <<get>> <<set>>
+    + FechaResena : DateTime <<get>> <<set>>
     + Titulo : string <<get>> <<set>>
-    + UsuarioId : string <<get>> <<set>>
     + <<override>> Equals(obj:object?) : bool
     + <<override>> GetHashCode() : int
 }
-Resena --> "FechaResena" DateTime
+
+Resena --> "Usuario" ApplicationUser
+Resena --> "ResenaItems" ResenaItem     
 @enduml
