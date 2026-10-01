@@ -1,0 +1,7 @@
+@startuml
+hide methods
+
+!include MetodoPago.puml
+!include GooglePay.puml
+
+@enduml

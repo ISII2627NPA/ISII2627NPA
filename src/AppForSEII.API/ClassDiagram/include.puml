@@ -24,6 +24,29 @@
 !include ./ResenaItem.puml
 
 !include ./MetodoPago.puml
+
 !include Compra.puml
+
+
+
+
+!include GooglePay.puml
+
+!include ./Visa.puml
+
+
+
+!include ./PayPal.puml
+
+
+
+
+
+
+
+
+
+
+
 @enduml
 
