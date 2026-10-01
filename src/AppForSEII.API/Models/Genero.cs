@@ -11,6 +11,11 @@ namespace AppForSEII.API.Models
             //Libros = new List<Libro>(); 
         }
 
+        public Genero(string nombre)
+        {
+            Nombre = nombre;
+        }
+
         [Key]
         public int Id { get; set; }
         
