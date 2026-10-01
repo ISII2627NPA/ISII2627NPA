@@ -30,6 +30,7 @@ namespace AppForSEII.API.Controllers
             return Ok(await _context.ApplicationUsers
             .Select(u=>new ApplicationUserDTO(u.Id, u.Nombre, u.Apellidos, u.UserName, u.PhoneNumber))
             .ToListAsync());
+            
         }
 
         // GET: ApplicationUsers/Details/5
@@ -48,6 +49,7 @@ namespace AppForSEII.API.Controllers
                 .Where(u => u.Id == id)
                 .Select(u=>new ApplicationUserDTO(u.Id, u.Nombre, u.Apellidos, u.UserName, u.PhoneNumber))
                 .FirstOrDefaultAsync();
+                
 
             if (applicationUserDTO == null)
             {

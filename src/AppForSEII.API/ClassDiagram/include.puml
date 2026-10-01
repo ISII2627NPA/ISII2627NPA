@@ -1,5 +1,28 @@
 @startuml
+
 !include ./ApplicationUser.puml
+!include ./Subasta.puml
+
+
+!include ./ApplicationUser.puml
+!include ./SubastaItem.puml
+
+
+
+!include ./Genero.puml
+
+!include ./Libro.puml
+!include ./ApplicationUser.puml
+
+
 !include ./Editorial.puml
+
 !include ./ResenaItem.puml
+
+!include ./MetodoPago.puml
+
+
+
+
 @enduml
+

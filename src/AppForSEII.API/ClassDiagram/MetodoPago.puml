@@ -1,0 +1,7 @@
+@startuml
+abstract class MetodoPago {
+    + Id : int
+    + MetodoPago()
+    + Equals(obj: object) : bool
+}
+@enduml
