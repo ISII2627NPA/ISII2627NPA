@@ -11,7 +11,7 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
     {
 
         base.OnModelCreating(builder);
-        builder.Entity<SubastaItem>().HasKey(si => new { si.LibroId, si.SubastaId });   
+          
 
     }
 

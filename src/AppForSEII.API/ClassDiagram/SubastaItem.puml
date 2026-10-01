@@ -8,4 +8,6 @@ class SubastaItem {
     + <<override>> Equals(obj:object) : bool
     + <<override>> GetHashCode() : int
 }
+SubastaItem o-> "Libro" Libro
+SubastaItem o-> "Subasta" Subasta
 @enduml
