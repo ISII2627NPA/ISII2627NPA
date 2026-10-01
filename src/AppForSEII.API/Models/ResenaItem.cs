@@ -11,6 +11,14 @@ namespace AppForSEII.API.Models
         {
         }
 
+        public ResenaItem(string? descripcion, int calificacion, int libroId, int resenaId)
+        {
+            Descripcion = descripcion;
+            Calificacion = calificacion;
+            LibroId = libroId;
+            ResenaId = resenaId;
+        }
+
 
         // Según el Flujo Básico (Paso 5): la descripción es opcional, entre 20 y 100 caracteres.
         [StringLength(100, MinimumLength = 20, ErrorMessage = "La descripción debe tener entre 20 y 100 caracteres")]
