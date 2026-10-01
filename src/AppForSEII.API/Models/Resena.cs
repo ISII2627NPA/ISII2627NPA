@@ -9,17 +9,20 @@ namespace AppForSEII.API.Models
     {
         public Resena()
         {
+            Titulo = string.Empty;
+            ApplicationUserId = string.Empty;
         }
 
-        public Resena(int id, DateTime fechaResena, string titulo)
+        public Resena(string applicationUserId, DateTime fechaResena, string titulo)
         {
-            Id = id;
+            ApplicationUserId = applicationUserId;
             FechaResena = fechaResena;
             Titulo = titulo;
         }
 
-        [Key]
-        public int Id { get; set; }
+     
+        [Required(ErrorMessage = "El identificador del usuario es obligatorio")]
+        public string ApplicationUserId { get; set; }
 
         [Required(ErrorMessage = "La fecha de la reseña es obligatoria")]
         public DateTime FechaResena { get; set; }
@@ -33,11 +36,9 @@ namespace AppForSEII.API.Models
         public string UsuarioId { get; set; }
         
         
-        // [ForeignKey("UsuarioId")]
-        // public virtual ApplicationUser Usuario { get; set; } = null!;
+        // public ApplicationUser Usuario { get; set; } // Descomentar luego
 
-        
-        // public virtual ICollection<ResenaItem> ResenaItems { get; set; } = new List<ResenaItem>();
+        // public IList<ResenaItem> ResenaItems { get; set; } // Descomentar luego
 
       
         public override bool Equals(object? obj)
