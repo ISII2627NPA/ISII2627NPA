@@ -12,7 +12,7 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
         base.OnModelCreating(builder);
     }
 
-    public DbSet<ApplicationUser> ApplicationUsers { get; set; }
+    
 
     public DbSet<Subasta> Subastas { get; set; }
 }
