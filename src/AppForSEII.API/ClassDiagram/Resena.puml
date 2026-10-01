@@ -1,0 +1,11 @@
+@startuml
+class Resena {
+    + Id : int <<get>> <<set>>
+    + FechaResena : DateTime <<get>> <<set>>
+    + Titulo : string <<get>> <<set>>
+    + Resena()
+    + Resena(fechaResena:DateTime, titulo:string)
+    + <<override>> Equals(obj:object?) : bool
+    + <<override>> GetHashCode() : int
+}
+@enduml
