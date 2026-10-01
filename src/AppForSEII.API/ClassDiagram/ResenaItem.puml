@@ -9,7 +9,5 @@ class ResenaItem {
     + <<override>> GetHashCode() : int
 
 
-    ResenaItem --> "Libro" Libro
-    ResenaItem --> "Resena" Resena
 }
 @enduml
