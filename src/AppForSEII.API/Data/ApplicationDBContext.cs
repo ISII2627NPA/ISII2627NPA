@@ -12,7 +12,10 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
         base.OnModelCreating(builder);
     }
 
+
+
     public DbSet<ApplicationUser> ApplicationUsers { get; set; }
+
 
     public DbSet<SubastaItem> SubastaItems { get; set; } 
 
@@ -29,6 +32,5 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
 
 
 
-
-
+    public DbSet<Subasta> Subastas { get; set; }
 }
