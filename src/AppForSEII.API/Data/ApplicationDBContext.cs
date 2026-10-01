@@ -31,9 +31,13 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
     public DbSet<MetodoPago> MetodosPago { get; set; }
 
 
+    public DbSet<Visa> Visas { get; set; }
+
+
     public DbSet<PayPal> PayPals { get; set; }
 
     public DbSet<Resena> Resenas { get; set; }
+
 
 
 
