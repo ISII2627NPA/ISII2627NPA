@@ -1,6 +1,10 @@
 @startuml
 
 !include ./ApplicationUser.puml
+!include ./Resena.puml
+
+
+!include ./ApplicationUser.puml
 !include ./Subasta.puml
 
 
@@ -17,6 +21,7 @@
 
 !include ./Editorial.puml
 !include ./MetodoPago.puml
+
 
 
 

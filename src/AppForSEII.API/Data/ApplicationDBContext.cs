@@ -30,6 +30,7 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
     public DbSet<Editorial> Editoriales { get; set; }
     public DbSet<MetodoPago> MetodosPago { get; set; }
 
+    public DbSet<Resena> Resenas { get; set; }
 
 
 
