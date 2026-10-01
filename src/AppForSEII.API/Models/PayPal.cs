@@ -13,9 +13,8 @@ namespace AppForSEII.API.Models
             NumeroTelefono = string.Empty; 
         }
 
-        public PayPal(int id, string numeroTelefono)
+        public PayPal(string numeroTelefono)
         {
-            Id = id; 
             NumeroTelefono = numeroTelefono;
         }
 
