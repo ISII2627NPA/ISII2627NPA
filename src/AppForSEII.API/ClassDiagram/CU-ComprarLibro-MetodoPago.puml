@@ -1,0 +1,4 @@
+@startuml
+hide methods
+!include MetodoPago.puml
+@enduml

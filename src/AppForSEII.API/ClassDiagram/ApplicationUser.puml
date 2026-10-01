@@ -1,5 +1,6 @@
 @startuml
 
+
 class ApplicationUser {
 
     + Nombre : string <<get>> <<set>>
@@ -23,3 +24,21 @@ class ApplicationUser {
 IdentityUser <|-- ApplicationUser
 
 @enduml
+
+class ApplicationUser {
+    + Nombre : string <<get>> <<set>>
+    + Apellidos : string <<get>> <<set>>
+    + Direccion : string <<get>> <<set>>
+    + Telefono : string <<get>> <<set>>
+    + ApplicationUser()
+    + ApplicationUser(nombre:string, apellidos:string, direccion:string, telefono:string)
+    + <<override>> Equals(obj:object?) : bool
+    + <<override>> GetHashCode() : int
+}
+IdentityUser <|-- ApplicationUser
+
+@enduml
+
+@enduml
+
+
