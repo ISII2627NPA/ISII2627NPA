@@ -1,0 +1,10 @@
+@startuml
+class Editorial {
+    + Editorial()
+    + Editorial(nombre:string)
+    + Id : int <<get>> <<set>>
+    + Nombre : string <<get>> <<set>>
+    + <<override>> Equals(obj:object?) : bool
+    + <<override>> GetHashCode() : int
+}
+@enduml

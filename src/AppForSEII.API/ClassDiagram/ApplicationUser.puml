@@ -10,4 +10,8 @@ class ApplicationUser {
     + <<override>> GetHashCode() : int
 }
 IdentityUser <|-- ApplicationUser
+
 @enduml
+
+@enduml
+
