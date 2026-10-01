@@ -25,12 +25,12 @@
 
 !include ./MetodoPago.puml
 
-!include Compra.puml
+!include ./Compra.puml
 
 
 
 
-!include GooglePay.puml
+!include ./GooglePay.puml
 
 !include ./Visa.puml
 

@@ -8,7 +8,7 @@ namespace AppForSEII.API.Models
         public Genero()
         {
             Nombre = string.Empty;
-            //Libros = new List<Libro>(); 
+            Libros = new List<Libro>(); 
         }
 
         public Genero(string nombre)
@@ -23,7 +23,7 @@ namespace AppForSEII.API.Models
         public string Nombre { get; set; }
 
         // Relación 1:N con Libro 
-     //   public List<Libro> Libros { get; set; }
+        public List<Libro> Libros { get; set; }
 
         public override bool Equals(object? obj)
         {

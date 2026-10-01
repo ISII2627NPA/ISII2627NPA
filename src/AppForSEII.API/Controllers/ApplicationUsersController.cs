@@ -21,7 +21,7 @@ namespace AppForSEII.API.Controllers
             _logger=logger;
         }
 
-        // GET: ApplicationUsers
+        
         [HttpGet]
         [Route("[action]")]
         [ProducesResponseType(typeof(IList<ApplicationUserDTO>), (int)HttpStatusCode.OK)]
@@ -33,7 +33,7 @@ namespace AppForSEII.API.Controllers
             
         }
 
-        // GET: ApplicationUsers/Details/5
+       
         [HttpGet]
         [Route("[action]")]
         [ProducesResponseType(typeof(ApplicationUserDTO), (int)HttpStatusCode.OK)]

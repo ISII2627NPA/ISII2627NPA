@@ -26,7 +26,7 @@ namespace AppForSEII.API.Data {
         public static void SeedRoles(RoleManager<IdentityRole> roleManager, List<string> roles) {
 
             foreach (string roleName in roles) {
-                //it checks such role does not exist in the database 
+               
                 if (!roleManager.RoleExistsAsync(roleName).Result) {
                     IdentityRole role = new IdentityRole();
                     role.Name = roleName;
@@ -38,7 +38,7 @@ namespace AppForSEII.API.Data {
         }
 
         public static void SeedUsers(UserManager<ApplicationUser> userManager, List<string> roles) {
-            //first, it checks the user does not already exist in the DB
+          
             if (userManager.FindByNameAsync("elena@uclm.es").Result == null) {
                 ApplicationUser user = new ApplicationUser("1", "Elena", "Navarro Martínez", "elena@uclm.es");
                 user.EmailConfirmed = true;
@@ -47,14 +47,14 @@ namespace AppForSEII.API.Data {
                 result.Wait();
 
                 if (result.IsCompletedSuccessfully) {
-                    //administrator role
+                    
                     userManager.AddToRoleAsync(user, roles[0]).Wait();
                 }
             }
 
 
             if (userManager.FindByNameAsync("peter@uclm.es").Result == null) {
-                //A customer class has been defined because it has different attributes (purchase, rental, etc.)
+                
                 ApplicationUser user = new ApplicationUser("3", "Peter", "Jackson", "peter@uclm.es");
                 user.EmailConfirmed = true;
 
@@ -63,7 +63,7 @@ namespace AppForSEII.API.Data {
                 result.Wait();
 
                 if (result.IsCompletedSuccessfully) {
-                    //customer role
+                   
                     userManager.AddToRoleAsync(user, roles[2]).Wait();
 
                 }

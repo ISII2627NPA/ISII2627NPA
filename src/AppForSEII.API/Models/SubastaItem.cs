@@ -27,10 +27,10 @@ namespace AppForSEII.API.Models
         public string? Descripcion { get; set; }
 
         public int LibroId { get; set; }
-        //public Libro Libro { get; set; }    Desactivada temporalmente
+        public Libro Libro { get; set; }    
 
         public int SubastaId { get; set; }
-        //public Subasta Subasta { get; set; }    Desactivada temporalmente
+        public Subasta Subasta { get; set; }    
 
         public override bool Equals(object? obj)
         {

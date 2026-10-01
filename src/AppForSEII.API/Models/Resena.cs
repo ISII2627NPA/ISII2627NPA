@@ -39,9 +39,9 @@ namespace AppForSEII.API.Models
         public string UsuarioId { get; set; }
         
         
-        // public ApplicationUser Usuario { get; set; } // Descomentar luego
+        public ApplicationUser Usuario { get; set; } 
 
-        // public IList<ResenaItem> ResenaItems { get; set; } // Descomentar luego
+        public IList<ResenaItem> ResenaItems { get; set; } 
 
       
         public override bool Equals(object? obj)
