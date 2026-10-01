@@ -13,18 +13,29 @@ namespace AppForSEII.API.Models
 
         public Visa()
         {
+            NumeroTarjeta = string.Empty; 
         }
 
-        public override bool Equals(object obj)
+        public Visa(string numeroTarjeta, DateTime fechaCaducidad)
+        {
+            NumeroTarjeta = numeroTarjeta;
+            FechaCaducidad = fechaCaducidad;
+        }
+
+        public override bool Equals(object? obj)
         {
             if (obj == null || GetType() != obj.GetType())
             {
                 return false;
             }
-            
+
             Visa otraVisa = (Visa)obj;
-            
             return this.Id == otraVisa.Id; 
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(Id);
         }
     }
 }
