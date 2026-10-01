@@ -63,8 +63,8 @@ namespace AppForSEII.API.Controllers
 
 
         private bool ApplicationUserDTOExists(string name, string surname)
-{
-    return _context.ApplicationUsers.Any(u => u.Nombre == name && u.Apellidos == surname);
-}
+        {
+            return _context.ApplicationUsers.Any(u => u.Nombre == name && u.Apellidos==surname);
+        }
     }
 }
