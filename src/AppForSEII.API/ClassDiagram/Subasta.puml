@@ -1,0 +1,11 @@
+@startuml
+class Subasta {
+    + Id : int <<get>> <<set>>
+    + FechaSubasta : DateTime <<get>> <<set>>
+    + PrecioSubasta : decimal <<get>> <<set>>
+    + Subasta()
+    + Subasta(fechaSubasta:DateTime, precioSubasta:decimal, applicationUserId:string, metodoPagoId:int)
+    + <<override>> Equals(obj:object?) : bool
+    + <<override>> GetHashCode() : int
+}
+@enduml
