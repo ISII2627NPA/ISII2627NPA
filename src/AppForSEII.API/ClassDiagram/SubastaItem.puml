@@ -1,13 +1,12 @@
 @startuml
 class SubastaItem {
     + PrecioPuja : decimal <<get>> <<set>>
-    + Descripcion : string <<get>> <<set>>
+    + Descripcion : string? <<get>> <<set>>
     + LibroId : int <<get>> <<set>>
     + SubastaId : int <<get>> <<set>>
     + SubastaItem()
-    + <<override>> Equals(obj:object) : bool
+    + SubastaItem(precioPuja:decimal, descripcion:string?, libroId:int, subastaId:int)
+    + <<override>> Equals(obj:object?) : bool
     + <<override>> GetHashCode() : int
 }
-SubastaItem o-> "Libro" Libro
-SubastaItem o-> "Subasta" Subasta
 @enduml

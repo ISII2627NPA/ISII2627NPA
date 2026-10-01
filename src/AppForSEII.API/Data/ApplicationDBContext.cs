@@ -9,16 +9,9 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
 {
     protected override void OnModelCreating(ModelBuilder builder)
     {
-
         base.OnModelCreating(builder);
-          
-
     }
 
-
     public DbSet<ApplicationUser> ApplicationUsers { get; set; }
-    public DbSet<SubastaItem> SubastaItem { get; set; }     
-
-
-
+    public DbSet<SubastaItem> SubastaItems { get; set; } 
 }

@@ -7,35 +7,30 @@ namespace AppForSEII.API.Models
     [PrimaryKey(nameof(LibroId), nameof(SubastaId))]
     public class SubastaItem
     {
-    
+        public SubastaItem()
+        {
+        }
+
+        public SubastaItem(decimal precioPuja, string? descripcion, int libroId, int subastaId)
+        {
+            PrecioPuja = precioPuja;
+            Descripcion = descripcion;
+            LibroId = libroId;
+            SubastaId = subastaId;
+        }
+
         [Required(ErrorMessage = "El precio de la puja es obligatorio.")]
+        [Range(0.01, double.MaxValue, ErrorMessage = "El precio de puja debe ser mayor que 0.")]
         public decimal PrecioPuja { get; set; }
 
-        
-        
         [StringLength(100, MinimumLength = 20, ErrorMessage = "La descripción debe tener entre 20 y 100 caracteres")]
         public string? Descripcion { get; set; }
 
-        
         public int LibroId { get; set; }
         //public Libro Libro { get; set; }    Desactivada temporalmente
 
         public int SubastaId { get; set; }
         //public Subasta Subasta { get; set; }    Desactivada temporalmente
-
-       
-        public SubastaItem()
-    {
-        Descripcion = string.Empty;
-    }
-
-    public SubastaItem(decimal precioPuja, string? descripcion, int libroId, int subastaId)
-    {
-        PrecioPuja = precioPuja;
-        Descripcion = descripcion;
-        LibroId = libroId;
-        SubastaId = subastaId;
-    }
 
         public override bool Equals(object? obj)
         {
