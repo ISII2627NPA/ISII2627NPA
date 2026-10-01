@@ -25,10 +25,17 @@
 
 !include ./MetodoPago.puml
 
+
+
+!include GooglePay.puml
+
 !include ./Visa.puml
 
 
+
 !include ./PayPal.puml
+
+
 
 
 

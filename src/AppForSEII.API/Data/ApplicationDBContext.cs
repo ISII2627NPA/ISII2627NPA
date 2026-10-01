@@ -34,6 +34,7 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
     public DbSet<ResenaItem> ResenaItems { get; set; }
 
     public DbSet<MetodoPago> MetodosPago { get; set; }
+    public DbSet<GooglePay> GooglePays { get; set; }
 
 
     public DbSet<Visa> Visas { get; set; }
