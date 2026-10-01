@@ -13,7 +13,8 @@ namespace AppForSEII.API.Models
             Apellidos = string.Empty;
             Direccion = string.Empty;
             Telefono = string.Empty;
-            // Resenas = new List<Resena>(); // TODO: Descomentar cuando Resena esté integrada
+            Resenas = new List<Resena>(); 
+           
         }
 
         public ApplicationUser(string nombre, string apellidos, string direccion, string telefono)
@@ -34,11 +35,12 @@ namespace AppForSEII.API.Models
         public string Direccion { get; set; }
 
         [Required(ErrorMessage = "El teléfono es obligatorio.")]
+
+        
         public string Telefono { get; set; }
 
         // Relación 1:N con Resena (Caso de Uso 4)
-        // TODO: Descomentar cuando la clase Resena esté en development
-        // public IList<Resena> Resenas { get; set; }
+        public IList<Resena> Resenas { get; set; }
 
         public override bool Equals(object? obj)
         {

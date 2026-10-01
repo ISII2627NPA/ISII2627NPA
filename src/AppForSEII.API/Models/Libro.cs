@@ -61,24 +61,22 @@ namespace AppForSEII.API.Models
         // Relación N:1 con Editorial
         public int EditorialId { get; set; }
         
-        //TODO: Descomentar estas lineas cuando la clase Editorial se intregre en development
-        // [ForeignKey("EditorialId")]
-        // public Editorial Editorial { get; set; }
+    
+        [ForeignKey("EditorialId")]
+        public Editorial Editorial { get; set; }
 
         // Relación N:1 con Genero
         public int GeneroId { get; set; }
         
-        //TODO: Descomentar estas lineas cuando la clase Genero se intregre en development
-        // [ForeignKey("GeneroId")]
-        // public Genero Genero { get; set; }
+        
+        [ForeignKey("GeneroId")]
+        public Genero Genero { get; set; }
 
         // Relación 1:N con SubastaItem (Caso de Uso 3)
-        // TODO: Descomentar cuando la clase SubastaItem se integre en development
-        // public IList<SubastaItem> SubastaItems { get; set; }
+        public IList<SubastaItem> SubastaItems { get; set; }
 
         // Relación 1:N con ResenaItem (Caso de Uso 4)
-        // TODO: Descomentar cuando la clase ResenaItem se integre en development
-        // public IList<ResenaItem> ResenaItems { get; set; }
+       public IList<ResenaItem> ResenaItems { get; set; }
 
         public override bool Equals(object? obj)
         {

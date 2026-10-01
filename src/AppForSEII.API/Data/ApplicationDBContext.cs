@@ -30,7 +30,7 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
 
     public DbSet<Editorial> Editoriales { get; set; }
 
-    // public DbSet<Resena> Resenas { get; set; }
+    public DbSet<Resena> Resenas { get; set; }
     public DbSet<ResenaItem> ResenaItems { get; set; }
 
     public DbSet<MetodoPago> MetodosPago { get; set; }
@@ -45,12 +45,6 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
 
 
     public DbSet<PayPal> PayPals { get; set; }
-
-    public DbSet<Resena> Resenas { get; set; }
-
-
-
-
 
 
     public DbSet<Subasta> Subastas { get; set; }

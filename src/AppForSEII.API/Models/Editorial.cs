@@ -7,8 +7,8 @@ namespace AppForSEII.API.Models
     {
         public Editorial()
         {
-            Nombre = string.Empty; // Resuelve el aviso de propiedad no nula
-            // Libros = new List<Libro>(); // Desactivado temporalmente
+            Nombre = string.Empty; 
+            Libros = new List<Libro>(); 
         }
 
         public Editorial(string nombre) 
@@ -23,7 +23,7 @@ namespace AppForSEII.API.Models
         [Required(AllowEmptyStrings = false, ErrorMessage = "El nombre de la editorial es obligatorio")]
         public string Nombre { get; set; }
 
-        // public virtual IList<Libro> Libros { get; set; } // Desactivado temporalmente
+        public virtual IList<Libro> Libros { get; set; } 
 
         public override bool Equals(object? obj)
         {

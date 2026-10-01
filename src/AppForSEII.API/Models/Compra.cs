@@ -30,7 +30,7 @@ namespace AppForSEII.API.Models
         [Required(ErrorMessage = "El precio total es obligatorio")]
         public decimal PrecioTotal { get; set; }
 
-        // Restricción del flujo: Opcional (string?) pero entre 5 y 10 caracteres
+        
         [StringLength(10, MinimumLength = 5, ErrorMessage = "El código de descuento debe tener entre 5 y 10 caracteres")]
         public string? CodigoDescuento { get; set; }
 
@@ -38,20 +38,19 @@ namespace AppForSEII.API.Models
         [Required(ErrorMessage = "El identificador del usuario es obligatorio")]
         public string ApplicationUserId { get; set; } 
         
-        // TODO: Descomentar cuando ApplicationUser se integre en development
-        // [ForeignKey("ApplicationUserId")]
-        // public ApplicationUser ApplicationUser { get; set; }
+        
+        [ForeignKey("ApplicationUserId")]
+        public ApplicationUser ApplicationUser { get; set; }
 
         // Relación N:1 con MetodoPago
         public int MetodoPagoId { get; set; }
         
-        // TODO: Descomentar cuando MetodoPago se integre totalmente en development
-        // [ForeignKey("MetodoPagoId")]
-        // public MetodoPago MetodoPago { get; set; }
+        
+        [ForeignKey("MetodoPagoId")]
+        public MetodoPago MetodoPago { get; set; }
 
         // Relación 1:N con CompraItem
-        // TODO: Descomentar cuando CompraItem se integre en development
-        // public List<CompraItem> CompraItems { get; set; } = new List<CompraItem>();
+        public List<CompraItem> CompraItems { get; set; } = new List<CompraItem>();
 
         public override bool Equals(object? obj)
         {
