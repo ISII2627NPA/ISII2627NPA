@@ -1,12 +1,15 @@
 @startuml
 class ResenaItem {
     + ResenaItem()
-    + Id : int <<get>> <<set>>
     + Descripcion : string? <<get>> <<set>>
     + Calificacion : int <<get>> <<set>>
     + LibroId : int <<get>> <<set>>
     + ResenaId : int <<get>> <<set>>
     + <<override>> Equals(obj:object?) : bool
     + <<override>> GetHashCode() : int
+
+
+    ResenaItem --> "Libro" Libro
+    ResenaItem --> "Resena" Resena
 }
 @enduml
