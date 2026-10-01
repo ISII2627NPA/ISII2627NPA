@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Identity; 
 
@@ -6,16 +7,15 @@ namespace AppForSEII.API.Models
 {
     public class ApplicationUser : IdentityUser
     {
-       
         public ApplicationUser()
         {
             Nombre = string.Empty;
             Apellidos = string.Empty;
             Direccion = string.Empty;
             Telefono = string.Empty;
+            // Resenas = new List<Resena>(); // TODO: Descomentar cuando Resena esté integrada
         }
 
-       
         public ApplicationUser(string nombre, string apellidos, string direccion, string telefono)
         {
             Nombre = nombre;
@@ -36,7 +36,10 @@ namespace AppForSEII.API.Models
         [Required(ErrorMessage = "El teléfono es obligatorio.")]
         public string Telefono { get; set; }
 
-        
+        // Relación 1:N con Resena (Caso de Uso 4)
+        // TODO: Descomentar cuando la clase Resena esté en development
+        // public IList<Resena> Resenas { get; set; }
+
         public override bool Equals(object? obj)
         {
             if (obj is ApplicationUser user)
@@ -48,7 +51,7 @@ namespace AppForSEII.API.Models
 
         public override int GetHashCode()
         {
-            return Id.GetHashCode();
+            return HashCode.Combine(Id);
         }
     }
 }

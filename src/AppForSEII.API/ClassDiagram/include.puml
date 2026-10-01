@@ -20,12 +20,23 @@
 
 
 !include ./Editorial.puml
+
+!include ./ResenaItem.puml
+
 !include ./MetodoPago.puml
+
 
 
 !include GooglePay.puml
 
+!include ./Visa.puml
+
+
+
 !include ./PayPal.puml
+
+
+
 
 
 

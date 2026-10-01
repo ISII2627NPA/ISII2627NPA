@@ -1,0 +1,5 @@
+@startuml
+hide methods
+!include ClassDiagram/Resena.puml
+!include ClassDiagram/ResenaItem.puml
+@enduml
