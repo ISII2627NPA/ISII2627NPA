@@ -9,10 +9,13 @@ namespace AppForSEII.API.Models
     {
         public Compra()
         {
+            ApplicationUserId = string.Empty;
         }
 
-        public Compra(DateTime fechaCompra, decimal precioTotal, string? codigoDescuento)
+        public Compra(string applicationUserId, int metodoPagoId, DateTime fechaCompra, decimal precioTotal, string? codigoDescuento)
         {
+            ApplicationUserId = applicationUserId;
+            MetodoPagoId = metodoPagoId;
             FechaCompra = fechaCompra;
             PrecioTotal = precioTotal;
             CodigoDescuento = codigoDescuento;
@@ -31,18 +34,20 @@ namespace AppForSEII.API.Models
         [StringLength(10, MinimumLength = 5, ErrorMessage = "El código de descuento debe tener entre 5 y 10 caracteres")]
         public string? CodigoDescuento { get; set; }
 
-        
-
         // Relación N:1 con ApplicationUser
+        [Required(ErrorMessage = "El identificador del usuario es obligatorio")]
+        public string ApplicationUserId { get; set; } 
+        
         // TODO: Descomentar cuando ApplicationUser se integre en development
-        // public string UsuarioId { get; set; } 
-        // [ForeignKey("UsuarioId")]
-        // public ApplicationUser Usuario { get; set; }
+        // [ForeignKey("ApplicationUserId")]
+        // public ApplicationUser ApplicationUser { get; set; }
 
         // Relación N:1 con MetodoPago
         public int MetodoPagoId { get; set; }
-        [ForeignKey("MetodoPagoId")]
-        public MetodoPago MetodoPago { get; set; }
+        
+        // TODO: Descomentar cuando MetodoPago se integre totalmente en development
+        // [ForeignKey("MetodoPagoId")]
+        // public MetodoPago MetodoPago { get; set; }
 
         // Relación 1:N con CompraItem
         // TODO: Descomentar cuando CompraItem se integre en development
