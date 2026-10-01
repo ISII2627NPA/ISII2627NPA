@@ -1,5 +1,9 @@
 @startuml
 
+!include ./ApplicationUser.puml
+!include ./SubastaItem.puml
+
+
 
 !include ./Genero.puml
 
@@ -9,6 +13,7 @@
 
 !include ./Editorial.puml
 !include ./MetodoPago.puml
+
 
 @enduml
 
