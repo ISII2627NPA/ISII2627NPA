@@ -20,7 +20,10 @@ namespace AppForSEII.API.Models
             Titulo = titulo;
         }
 
-     
+
+        [Key]
+        public int Id { get; set; } 
+        
         [Required(ErrorMessage = "El identificador del usuario es obligatorio")]
         public string ApplicationUserId { get; set; }
 
