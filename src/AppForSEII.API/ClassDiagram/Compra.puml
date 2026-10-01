@@ -1,0 +1,16 @@
+@startuml
+class Compra {
+    + Compra()
+    + Compra(fechaCompra:DateTime, precioTotal:decimal, codigoDescuento:string?)
+    + Id : int <<get>> <<set>>
+    + FechaCompra : DateTime <<get>> <<set>>
+    + PrecioTotal : decimal <<get>> <<set>>
+    + CodigoDescuento : string <<get>> <<set>>
+    + <<override>> Equals(obj:object?) : bool
+    + <<override>> GetHashCode() : int
+}
+
+Compra o-> "Usuario" ApplicationUser
+Compra o-> "MetodoPago" MetodoPago
+Compra o-> "CompraItems" CompraItem
+@enduml
