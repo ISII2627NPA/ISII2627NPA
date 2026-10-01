@@ -8,17 +8,29 @@ namespace AppForSEII.API.Models
         [Required(ErrorMessage = "El número de teléfono es obligatorio.")]
         public string NumeroTelefono { get; set; }
 
-        public PayPal() 
+        public PayPal()
         {
+            NumeroTelefono = string.Empty; 
         }
 
-        public override bool Equals(object obj)
+        public PayPal(int id, string numeroTelefono)
+        {
+            Id = id; 
+            NumeroTelefono = numeroTelefono;
+        }
+
+        public override bool Equals(object? obj)
         {
             if (obj is PayPal p)
             {
-                return Id == p.Id;
+                return Id == p.Id; 
             }
             return false;
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(Id);
         }
     }
 }
