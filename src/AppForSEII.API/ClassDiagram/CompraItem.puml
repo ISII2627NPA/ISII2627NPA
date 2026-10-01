@@ -1,0 +1,12 @@
+@startuml
+class CompraItem {
+    + Id : int
+    + Cantidad : int
+    + LibroId : int
+    + CompraId : int
+    + CompraItem()
+    + CompraItem(cantidad: int, libroId: int, compraId: int)
+    + Equals(obj: object) : bool
+    + GetHashCode() : int
+}
+@enduml
