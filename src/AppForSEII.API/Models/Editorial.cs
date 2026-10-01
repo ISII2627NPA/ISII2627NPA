@@ -19,8 +19,7 @@ namespace AppForSEII.API.Models
         [Key]
         public int Id { get; set; }
 
-        // Especificamos la ruta completa para evitar la ambigüedad del error CS0104
-        [System.ComponentModel.DataAnnotations.Display(Name = "Nombre de la Editorial")]
+        
         [Required(AllowEmptyStrings = false, ErrorMessage = "El nombre de la editorial es obligatorio")]
         public string Nombre { get; set; }
 
