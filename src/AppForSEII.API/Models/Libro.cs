@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -10,9 +11,10 @@ namespace AppForSEII.API.Models
         {
             Titulo = string.Empty;
             Autor = string.Empty;
+            TipoLibro = string.Empty;
         }
 
-        public Libro(string titulo, string autor, DateTime fechaLanzamiento, decimal precioCompra, int stock, int editorialId, int generoId)
+        public Libro(string titulo, string autor, DateTime fechaLanzamiento, decimal precioCompra, int stock, int editorialId, int generoId, string tipoLibro)
         {
             Titulo = titulo;
             Autor = autor;
@@ -21,6 +23,7 @@ namespace AppForSEII.API.Models
             Stock = stock;
             EditorialId = editorialId;
             GeneroId = generoId;
+            TipoLibro = tipoLibro;
         }
 
         [Key]
@@ -31,6 +34,9 @@ namespace AppForSEII.API.Models
 
         [Required(ErrorMessage = "El autor es obligatorio")]
         public string Autor { get; set; }
+
+        [Required(ErrorMessage = "El tipo de libro es obligatorio")]
+        public string TipoLibro { get; set; }
 
         [Required(ErrorMessage = "La fecha de lanzamiento es obligatoria")]
         [DataType(System.ComponentModel.DataAnnotations.DataType.Date)]
@@ -56,6 +62,10 @@ namespace AppForSEII.API.Models
         //TODO: Descomentar estas lineas cuando la clase Genero se intregre en development
         // [ForeignKey("GeneroId")]
         // public Genero Genero { get; set; }
+
+        // Relación 1:N con SubastaItem (Caso de Uso 3)
+        // TODO: Descomentar cuando la clase SubastaItem se integre en development
+        // public IList<SubastaItem> SubastaItems { get; set; }
 
         public override bool Equals(object? obj)
         {
