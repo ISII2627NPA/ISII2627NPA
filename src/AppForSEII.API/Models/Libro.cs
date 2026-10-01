@@ -14,7 +14,7 @@ namespace AppForSEII.API.Models
             TipoLibro = string.Empty;
         }
 
-        public Libro(string titulo, string autor, DateTime fechaLanzamiento, decimal precioCompra, int stock, int editorialId, int generoId, string tipoLibro)
+        public Libro(string titulo, string autor, DateTime fechaLanzamiento, decimal precioCompra, int stock, int editorialId, int generoId, string tipoLibro,decimal calificacionMedia)
         {
             Titulo = titulo;
             Autor = autor;
@@ -24,6 +24,7 @@ namespace AppForSEII.API.Models
             EditorialId = editorialId;
             GeneroId = generoId;
             TipoLibro = tipoLibro;
+            CalificacionMedia = calificacionMedia;
         }
 
         [Key]
@@ -35,8 +36,16 @@ namespace AppForSEII.API.Models
         [Required(ErrorMessage = "El autor es obligatorio")]
         public string Autor { get; set; }
 
+
+        [Required(ErrorMessage = "La calificación media es obligatoria")]
+        [Range(0, 5, ErrorMessage = "La calificación media debe estar entre 0 y 5")]
+        public decimal CalificacionMedia { get; set; }
+
+
         [Required(ErrorMessage = "El tipo de libro es obligatorio")]
+        [StringLength(50, MinimumLength = 10, ErrorMessage = "El tipo de libro debe tener entre 10 y 50 caracteres")]
         public string TipoLibro { get; set; }
+
 
         [Required(ErrorMessage = "La fecha de lanzamiento es obligatoria")]
         [DataType(System.ComponentModel.DataAnnotations.DataType.Date)]
@@ -66,6 +75,10 @@ namespace AppForSEII.API.Models
         // Relación 1:N con SubastaItem (Caso de Uso 3)
         // TODO: Descomentar cuando la clase SubastaItem se integre en development
         // public IList<SubastaItem> SubastaItems { get; set; }
+
+        // Relación 1:N con ResenaItem (Caso de Uso 4)
+        // TODO: Descomentar cuando la clase ResenaItem se integre en development
+        // public IList<ResenaItem> ResenaItems { get; set; }
 
         public override bool Equals(object? obj)
         {
