@@ -3,6 +3,7 @@ class Visa {
     + NumeroTarjeta : string <<get>> <<set>>
     + FechaCaducidad : DateTime <<get>> <<set>>
     + Visa()
+    + Visa(numeroTarjeta:string, fechaCaducidad:DateTime)
     + <<override>> Equals(obj:object?) : bool
     + <<override>> GetHashCode() : int
 }
