@@ -2,6 +2,7 @@
 class PayPal {
     + NumeroTelefono : string <<get>> <<set>>
     + PayPal()
+    + PayPal(numeroTelefono:string)
     + <<override>> Equals(obj:object?) : bool
     + <<override>> GetHashCode() : int
 }
