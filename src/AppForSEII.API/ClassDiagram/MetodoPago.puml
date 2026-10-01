@@ -1,7 +1,8 @@
 @startuml
 abstract class MetodoPago {
-    + Id : int
+    + Id : int <<get>> <<set>>
     + MetodoPago()
-    + Equals(obj: object) : bool
+    + <<override>> Equals(obj:object?) : bool
+    + <<override>> GetHashCode() : int
 }
 @enduml

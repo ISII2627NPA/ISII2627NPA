@@ -22,6 +22,10 @@
 !include ./Editorial.puml
 !include ./MetodoPago.puml
 
+!include ./PayPal.puml
+
+
+
 
 
 
