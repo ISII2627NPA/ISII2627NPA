@@ -1,4 +1,4 @@
-cambiar codigo de ApplicationUser.cs por este:
+
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
