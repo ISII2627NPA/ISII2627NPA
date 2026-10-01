@@ -1,4 +1,4 @@
 @startuml
-!include .\\ApplicationUser.puml
-!include .\\Subasta.puml
+!include ./ApplicationUser.puml
+!include ./Subasta.puml
 @enduml

@@ -1,10 +1,26 @@
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
-namespace ISII2627NPA.Models
+namespace AppForSEII.API.Models
 {
     public class Subasta
     {
+        
+        public Subasta()
+        {
+            ApplicationUserId = string.Empty;
+            // SubastaItems = new List<SubastaItem>(); // Descomentar luego
+        }
+
+        
+        public Subasta(DateTime fechaSubasta, decimal precioSubasta, string applicationUserId, int metodoPagoId)
+        {
+            FechaSubasta = fechaSubasta;
+            PrecioSubasta = precioSubasta;
+            ApplicationUserId = applicationUserId;
+            MetodoPagoId = metodoPagoId;
+        }
 
         [Key]
         public int Id { get; set; }
@@ -16,18 +32,18 @@ namespace ISII2627NPA.Models
         public decimal PrecioSubasta { get; set; }
 
         
-        //public IList<SubastaItem> SubastaItems { get; set; } = new List<SubastaItem>();   Descomentar luego
+        // public IList<SubastaItem> SubastaItems { get; set; } // Descomentar luego
+
+        
         public string ApplicationUserId { get; set; }
-        public ApplicationUser Usuario { get; set; }
+        // public ApplicationUser Usuario { get; set; } // Descomentar luego
 
+        
         public int MetodoPagoId { get; set; }
-        //public MetodoPago MetodoPago { get; set; }     Descomentar luego
+        // public MetodoPago MetodoPago { get; set; } // Descomentar luego
 
-        public Subasta()
-        {
-        }
-
-        public override bool Equals(object obj)
+        
+        public override bool Equals(object? obj)
         {
             if (obj == null || GetType() != obj.GetType())
             {
