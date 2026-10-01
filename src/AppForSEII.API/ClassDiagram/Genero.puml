@@ -1,7 +1,9 @@
 @startuml
-abstract class MetodoPago {
+class Genero {
+    + Genero()
+    + Genero(nombre:string)
     + Id : int <<get>> <<set>>
-    + MetodoPago()
+    + Nombre : string <<get>> <<set>>
     + <<override>> Equals(obj:object?) : bool
     + <<override>> GetHashCode() : int
 }
