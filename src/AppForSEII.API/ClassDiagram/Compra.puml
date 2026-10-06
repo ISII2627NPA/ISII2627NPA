@@ -10,7 +10,5 @@ class Compra {
     + <<override>> GetHashCode() : int
 }
 
-Compra o-> "Usuario" ApplicationUser
-Compra o-> "MetodoPago" MetodoPago
-Compra o-> "CompraItems" CompraItem
+
 @enduml
