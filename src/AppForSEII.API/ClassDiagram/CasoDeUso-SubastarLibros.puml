@@ -1,0 +1,29 @@
+@startuml
+
+!include ApplicationUser.puml
+!include Libro.puml
+!include Editorial.puml
+!include Subasta.puml
+!include SubastaItem.puml
+!include MetodoPago.puml
+!include Visa.puml
+!include GooglePay.puml
+!include PayPal.puml
+
+class IdentityUser {
+}
+
+IdentityUser <|-- ApplicationUser
+
+MetodoPago <|-- Visa
+MetodoPago <|-- GooglePay
+MetodoPago <|-- PayPal
+
+
+Libro -> "Editorial" Editorial
+SubastaItem -> "Libro" Libro
+SubastaItem -> "Subasta" Subasta
+Subasta -> "Usuario" ApplicationUser
+Subasta -> "MetodoPago" MetodoPago
+
+@enduml
