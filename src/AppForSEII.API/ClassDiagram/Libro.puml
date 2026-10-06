@@ -14,8 +14,7 @@ class Libro {
     + <<override>> GetHashCode() : int
 }
 
-Libro o-> "Editorial" Editorial
-Libro o-> "Genero" Genero
+
 @enduml
 
 

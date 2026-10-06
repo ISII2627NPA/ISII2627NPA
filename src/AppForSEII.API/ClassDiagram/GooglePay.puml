@@ -7,5 +7,5 @@ class GooglePay {
     + <<override>> GetHashCode() : int
 }
 
-MetodoPago <|-- GooglePay
+
 @enduml
