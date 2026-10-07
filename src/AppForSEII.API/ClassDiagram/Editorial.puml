@@ -1,4 +1,6 @@
 @startuml
+hide methods 
+
 class Editorial {
     + Editorial()
     + Editorial(nombre:string)
