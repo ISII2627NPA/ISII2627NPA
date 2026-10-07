@@ -1,4 +1,5 @@
 @startuml
+hide methods
 class Libro {
     + Libro()
     + Libro(titulo:string, autor:string, fechaLanzamiento:DateTime, precioCompra:decimal, stock:int, editorialId:int, generoId:int)
@@ -14,8 +15,7 @@ class Libro {
     + <<override>> GetHashCode() : int
 }
 
-Libro o-> "Editorial" Editorial
-Libro o-> "Genero" Genero
+
 @enduml
 
 
