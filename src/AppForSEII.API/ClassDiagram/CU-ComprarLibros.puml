@@ -1,4 +1,28 @@
 @startuml
 hide methods
+
+!include ApplicationUser.puml
+!include Compra.puml
+!include CompraItem.puml
 !include Editorial.puml
+!include Genero.puml
+!include Libro.puml
+!include MetodoPago.puml
+!include GooglePay.puml
+!include PayPal.puml
+!include Visa.puml
+
+class IdentityUser
+
+IdentityUser <|-- ApplicationUser
+MetodoPago <|-- Visa
+MetodoPago <|-- GooglePay
+MetodoPago <|-- PayPal
+
+Compra -- MetodoPago
+Compra"Compras" -- "Usuario"ApplicationUser
+Compra "Compra" -- "CompraItems" CompraItem
+Libro "Libro" -- "CompraItems" CompraItem
+Libro "Libros" -- "Editorial" Editorial
+Libro"Libros" -- "Genero" Genero
 @enduml
