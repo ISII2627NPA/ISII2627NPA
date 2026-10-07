@@ -20,8 +20,9 @@ MetodoPago <|-- GooglePay
 MetodoPago <|-- PayPal
 
 Compra -- MetodoPago
+Compra"Compras" -- "Usuario"ApplicationUser
 Compra "Compra" -- "CompraItems" CompraItem
 Libro "Libro" -- "CompraItems" CompraItem
 Libro "Libros" -- "Editorial" Editorial
-Libro -- "Genero" Genero
+Libro"Libros" -- "Genero" Genero
 @enduml
