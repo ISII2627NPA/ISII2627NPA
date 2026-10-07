@@ -1,0 +1,19 @@
+@startuml
+hide methods
+
+!include Genero.puml
+!include Editorial.puml
+!include Libro.puml
+!include ResenaItem.puml
+!include Resena.puml
+!include ApplicationUser.puml
+
+
+Genero "Genero" -- "Libros" Libro
+Editorial "Editorial" -- "Libros" Libro
+Libro "Libro" -- "ResenaItems" ResenaItem
+ResenaItem "ResenaItems" -- "Resena" Resena
+Resena "Resenas" -- "Usuario" ApplicationUser
+IdentityUser <|-- ApplicationUser
+
+@enduml

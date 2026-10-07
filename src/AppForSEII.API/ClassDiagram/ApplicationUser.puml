@@ -2,7 +2,7 @@
 
 
 class ApplicationUser {
-
+hide methods
     + Nombre : string <<get>> <<set>>
 
     + Apellidos : string <<get>> <<set>>
