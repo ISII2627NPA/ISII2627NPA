@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
-namespace ISII2627NPA.API.Controllers
+namespace AppForSEII.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
