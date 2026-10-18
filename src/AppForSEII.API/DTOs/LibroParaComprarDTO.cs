@@ -1,7 +1,7 @@
 using System;
 using System.ComponentModel.DataAnnotations;
 
-namespace ISII2627NPA.Shared.LibroDTOs 
+namespace AppForSEII.API.Shared.LibroDTOs 
 {
     public class LibroParaComprarDTO
     {
@@ -9,27 +9,28 @@ namespace ISII2627NPA.Shared.LibroDTOs
         {
         }
 
-        
-        public LibroParaComprarDTO(int id, string titulo, string genero, string editorial, DateTime fechaLanzamiento, double precioCompra)
+        public LibroParaComprarDTO(int id, string titulo, string genero, string editorial, string autor, DateTime fechaLanzamiento, double precioCompra, int stock)
         {
             Id = id;
             Titulo = titulo;
             Genero = genero;
             Editorial = editorial;
+            Autor = autor;
             FechaLanzamiento = fechaLanzamiento;
             PrecioCompra = precioCompra;
+            Stock = stock;
         }
 
         public int Id { get; set; }
 
-        [StringLength(50, ErrorMessage = "El título debe tener una longitud máxima de 50 caracteres")]
         public string Titulo { get; set; } = "Título";
 
-        [StringLength(50, ErrorMessage = "El género debe tener una longitud máxima de 50 caracteres", MinimumLength = 4)]
         public string Genero { get; set; } = "Ficción";
 
-        [StringLength(50, ErrorMessage = "La editorial debe tener una longitud máxima de 50 caracteres")]
         public string Editorial { get; set; } = "Editorial";
+
+        [Required(ErrorMessage = "El autor es obligatorio")]
+        public string Autor { get; set; } = "Autor";
 
         [DataType(System.ComponentModel.DataAnnotations.DataType.Date)]
         public DateTime FechaLanzamiento { get; set; } = DateTime.Today;
@@ -39,6 +40,10 @@ namespace ISII2627NPA.Shared.LibroDTOs
         [Range(1, float.MaxValue, ErrorMessage = "El precio mínimo es 1")]
         public double PrecioCompra { get; set; } = 1;
 
+        [Required]
+        [Range(1, int.MaxValue, ErrorMessage = "El stock debe ser mayor que 0")]
+        public int Stock { get; set; } = 1;
+
         public override bool Equals(object? obj)
         {
             return obj is LibroParaComprarDTO dTO &&
@@ -46,13 +51,16 @@ namespace ISII2627NPA.Shared.LibroDTOs
                    Titulo == dTO.Titulo &&
                    Genero == dTO.Genero &&
                    Editorial == dTO.Editorial &&
+                   Autor == dTO.Autor &&
                    FechaLanzamiento == dTO.FechaLanzamiento &&
-                   PrecioCompra == dTO.PrecioCompra;
+                   PrecioCompra == dTO.PrecioCompra &&
+                   Stock == dTO.Stock;
         }
 
         public override int GetHashCode()
         {
-            return HashCode.Combine(Id, Titulo, Genero, Editorial, FechaLanzamiento, PrecioCompra);
+            // HashCode.Combine admite un máximo de 8 parámetros exactos, por lo que encaja perfecto
+            return HashCode.Combine(Id, Titulo, Genero, Editorial, Autor, FechaLanzamiento, PrecioCompra, Stock);
         }
     }
 }
