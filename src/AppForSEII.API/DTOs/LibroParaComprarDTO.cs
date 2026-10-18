@@ -1,7 +1,7 @@
 using System;
 using System.ComponentModel.DataAnnotations;
 
-namespace AppForSEII.API.Shared.LibroDTOs 
+namespace AppForSEII.API.DTOs
 {
     public class LibroParaComprarDTO
     {
