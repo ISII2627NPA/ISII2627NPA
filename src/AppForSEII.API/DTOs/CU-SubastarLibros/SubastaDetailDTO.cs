@@ -9,10 +9,11 @@ namespace AppForSEII.API.DTOs
     public class SubastaDetailDTO
     {
         /* TODO: Descomentar este constructor cuando heredes de SubastaForCreateDTO
-        public SubastaDetailDTO(int id, string nombre, string apellidos, string telefono, 
+        public SubastaDetailDTO(int id, string usuarioUserName, string nombre, string apellidos, string telefono, 
             DateTime fechaSubasta, decimal precioSubasta, MetodoPago metodoPago, 
             IList<SubastaItemDTO> subastaItems)
-            : base(nombre,
+            : base(usuarioUserName,
+                   nombre,
                    apellidos,
                    telefono,
                    metodoPago,
