@@ -39,7 +39,8 @@ namespace AppForSEII.API.DTOs
 
         public override int GetHashCode()
         {
-            return HashCode.Combine(base.GetHashCode(), Id, FechaResena);
-        }
+             // TODO: Cuando ResenaForCreateDTO exista, cambiar a: return HashCode.Combine(base.GetHashCode(), Id, FechaResena);
+            return HashCode.Combine(Id, FechaResena);
+        }               
     }
 }
