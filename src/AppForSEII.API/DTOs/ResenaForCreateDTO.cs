@@ -64,7 +64,9 @@ namespace AppForSEII.API.DTOs
 
         public override int GetHashCode()
         {
-            return HashCode.Combine(UsuarioUserName, Direccion, Telefono, Titulo);
+            // TODO: Descomentar esta línea cuando ResenaItems esté disponible y borrar el return actual
+            // return HashCode.Combine(UsuarioUserName, Nombre, Apellidos, Direccion, Telefono, Titulo, ResenaItems);
+            return HashCode.Combine(UsuarioUserName, Nombre, Apellidos, Direccion, Telefono, Titulo);   
         }
     }
 }
