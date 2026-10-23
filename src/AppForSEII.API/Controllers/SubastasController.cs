@@ -32,27 +32,29 @@ namespace AppForSEII.API.Controllers
                 .Include(s => s.SubastaItems)
                     .ThenInclude(si => si.Libro)
                         .ThenInclude(l => l.Editorial)
-                .Include(s => s.Usuario)
-                
-                /* TODO: Descomentar todo este bloque Select cuando los DTOs existan en la rama principal
-                .Select(s => new SubastaDetailDTO(
-                    s.Id,
-                    s.Usuario.Nombre,
-                    s.Usuario.Apellidos,
-                    s.Usuario.Telefono,
-                    s.FechaSubasta,
-                    s.PrecioSubasta,
-                    s.MetodoPago,
-                    s.SubastaItems.Select(si => new SubastaItemDTO(
-                        si.Libro.Titulo,
-                        si.Libro.Autor,
-                        si.Libro.Editorial.Nombre,
-                        si.PrecioPuja,
-                        si.Descripcion
-                    )).ToList()
-                ))
-                */
-                .FirstOrDefaultAsync();
+                .Include(s => s.Usuario) 
+                .Include(s => s.MetodoPago) 
+    
+            /* TODO: Descomentar todo este bloque Select cuando los DTOs existan en la rama principal
+            .Select(s => new SubastaDetailDTO(
+                s.Id,
+                s.Usuario.UserName, 
+                s.Usuario.Nombre,
+                s.Usuario.Apellidos,
+                s.Usuario.Telefono,
+                s.FechaSubasta,
+                s.PrecioSubasta,
+                s.MetodoPago,
+                s.SubastaItems.Select(si => new SubastaItemDTO(
+                    si.Libro.Titulo,
+                    si.Libro.Autor,
+                    si.Libro.Editorial.Nombre,
+                    si.PrecioPuja,
+                    si.Descripcion
+                )).ToList()
+            ))
+            */
+            .FirstOrDefaultAsync();
 
             if (subasta == null)
             {
