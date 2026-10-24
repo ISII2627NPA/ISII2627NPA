@@ -27,7 +27,7 @@ namespace AppForSEII.API.Controllers
         // TODO: Descomentar la siguiente línea cuando ResenaDetailDTO esté fusionado
         // [ProducesResponseType(typeof(ResenaDetailDTO), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
-        public async Task<ActionResult> GetResena(int id)
+        public async Task<ActionResult> GetDetailsForResena(int id)
         {
             /* TODO: Descomentar la lógica real cuando ResenaDetailDTO y ResenaItemDTO estén fusionados
             var resena = await _context.Resenas
