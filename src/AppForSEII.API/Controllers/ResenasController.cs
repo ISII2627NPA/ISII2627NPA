@@ -22,7 +22,7 @@ namespace AppForSEII.API.Controllers
             _logger = logger;
         }
 
-        [HttpGet]
+            [HttpGet]
         [Route("[action]")]
         // TODO: Descomentar la siguiente línea cuando ResenaDetailDTO esté fusionado
         // [ProducesResponseType(typeof(ResenaDetailDTO), (int)HttpStatusCode.OK)]
@@ -32,21 +32,20 @@ namespace AppForSEII.API.Controllers
             /* TODO: Descomentar la lógica real cuando ResenaDetailDTO y ResenaItemDTO estén fusionados
             var resena = await _context.Resenas
                 .Where(r => r.Id == id)
-                .Include(r => r.Usuario) 
-                .Include(r => r.ResenaItems) 
-                    .ThenInclude(ri => ri.Libro) 
-                        .ThenInclude(l => l.Editorial) 
-                .Select(r => new ResenaDetailDTO
-                {
-                    Id = r.Id,
-                    FechaResena = r.FechaResena,
-                    UsuarioUserName = r.Usuario.UserName,
-                    Nombre = r.Usuario.Nombre,
-                    Apellidos = r.Usuario.Apellidos,
-                    Direccion = r.Usuario.Direccion,
-                    Telefono = r.Usuario.Telefono,
-                    Titulo = r.Titulo,
-                    ResenaItems = r.ResenaItems.Select(ri => new ResenaItemDTO(
+                .Include(r => r.Usuario)
+                .Include(r => r.ResenaItems)
+                    .ThenInclude(ri => ri.Libro)
+                        .ThenInclude(l => l.Editorial)
+                .Select(r => new ResenaDetailDTO(
+                    r.Id,
+                    r.FechaResena,
+                    r.Usuario.UserName,
+                    r.Usuario.Nombre,
+                    r.Usuario.Apellidos,
+                    r.Usuario.Direccion,
+                    r.Usuario.Telefono,
+                    r.Titulo,
+                    r.ResenaItems.Select(ri => new ResenaItemDTO(
                         ri.Libro.Id,
                         ri.Libro.Titulo,
                         ri.Libro.Editorial.Nombre,
@@ -54,7 +53,7 @@ namespace AppForSEII.API.Controllers
                         ri.Calificacion,
                         ri.Descripcion
                     )).ToList()
-                })
+                ))
                 .FirstOrDefaultAsync();
 
             if (resena == null)
