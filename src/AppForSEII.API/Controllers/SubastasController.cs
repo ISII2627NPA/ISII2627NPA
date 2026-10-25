@@ -46,6 +46,7 @@ namespace AppForSEII.API.Controllers
                 s.PrecioSubasta,
                 s.MetodoPago,
                 s.SubastaItems.Select(si => new SubastaItemDTO(
+                    si.Libro.Id,
                     si.Libro.Titulo,
                     si.Libro.Autor,
                     si.Libro.Editorial.Nombre,
