@@ -18,7 +18,7 @@ namespace AppForSEII.API.DTOs
 
         protected bool CompareDate(DateTime date1, DateTime date2)
         {
-            return (date1.Subtract(date2) < new TimeSpan(0, 1, 0));
+        return date1.Subtract(date2).Duration() < new TimeSpan(0, 1, 0);
         }
 
         public override bool Equals(object? obj)
