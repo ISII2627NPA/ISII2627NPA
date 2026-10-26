@@ -36,12 +36,13 @@ namespace AppForSEII.API.Controllers
                     .ThenInclude(ci => ci.Libro) 
                         .ThenInclude(libro => libro.Editorial) 
                 .Include(c => c.ApplicationUser) 
-                .Include(c => c.MetodoPago) // <--- Esta es la línea que faltaba
+                .Include(c => c.MetodoPago) 
                 
                 /* TODO: Descomentar todo este bloque Select cuando los DTOs existan en la rama principal
                 .Select(c => new CompraDetailDTO(
                     c.Id, 
                     c.FechaCompra, 
+                    c.PrecioTotal, // <--- Añadido el precio total aquí para cuando se descomente
                     c.ApplicationUser.UserName,
                     c.ApplicationUser.Nombre, 
                     c.ApplicationUser.Apellidos,
@@ -67,7 +68,7 @@ namespace AppForSEII.API.Controllers
                 return NotFound();
             }
 
-            // TODO:  descomentar el Select de arriba, cambiar este return a: return Ok(compra);
+            // TODO: descomentar el Select de arriba, cambiar este return a: return Ok(compra);
             return Ok();
         }
 
@@ -92,6 +93,11 @@ namespace AppForSEII.API.Controllers
                 }
             }
 
+            // Validación manual de la longitud del código de descuento (Paso 5)
+            if (!string.IsNullOrEmpty(compraForCreate.CodigoDescuento) && (compraForCreate.CodigoDescuento.Length < 5 || compraForCreate.CodigoDescuento.Length > 10)) {
+                ModelState.AddModelError("CodigoDescuento", "Error! El código de descuento debe tener entre 5 y 10 caracteres.");
+            }
+
             var user = _context.ApplicationUsers.FirstOrDefault(au => au.UserName == compraForCreate.UsuarioUserName);
             if (user == null)
                 ModelState.AddModelError("CompraApplicationUser", "Error! UserName is not registered");
@@ -101,16 +107,11 @@ namespace AppForSEII.API.Controllers
 
             var libroTitulos = compraForCreate.CompraItems.Select(ci => ci.Titulo).ToList<string>();
 
+            // Eliminado el .Select() anónimo para que Entity Framework rastree las entidades originales y pueda guardar los cambios de Stock
             var libros = _context.Libros
                 .Include(l => l.CompraItems)
                     .ThenInclude(ci => ci.Compra)
                 .Where(l => libroTitulos.Contains(l.Titulo))
-                .Select(l => new {
-                    l.Id,
-                    l.Titulo,
-                    l.Stock,
-                    l.PrecioCompra
-                })
                 .ToList();
 
             user.Nombre = compraForCreate.Nombre;
@@ -140,6 +141,9 @@ namespace AppForSEII.API.Controllers
                         Cantidad = item.Cantidad
                     });
                     item.PrecioCompra = libro.PrecioCompra;
+                    
+                    // Actualización del stock al realizar la compra
+                    libro.Stock -= item.Cantidad;
                 }
             }
 
@@ -155,7 +159,6 @@ namespace AppForSEII.API.Controllers
                 await _context.SaveChangesAsync();
             }
             catch (Exception ex) {
-                _logger.LogError(ex.Message);
                 ModelState.AddModelError("Compra", $"Error! Hubo un error al guardar tu compra, por favor, inténtalo más tarde");
                 return Conflict("Error" + ex.Message);
             }
@@ -163,6 +166,7 @@ namespace AppForSEII.API.Controllers
             var compraDetail = new CompraDetailDTO(
                 compra.Id, 
                 compra.FechaCompra,
+                compra.PrecioTotal,
                 compra.ApplicationUser.UserName, 
                 compra.ApplicationUser.Nombre,
                 compra.ApplicationUser.Apellidos,
