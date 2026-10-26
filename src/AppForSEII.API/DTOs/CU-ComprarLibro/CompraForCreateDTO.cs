@@ -8,8 +8,8 @@ namespace AppForSEII.API.DTOs
 {
     public class CompraForCreateDTO
     {
-        // TODO: Descomentar 'IList<CompraItemDTO> compraItems' cuando la rama de CompraItemDTO se fusione
-        public CompraForCreateDTO(string usuarioUserName, string nombre, string apellidos, string direccion, string telefono, MetodoPago metodoPago, string? codigoDescuento /*, IList<CompraItemDTO> compraItems*/)
+       
+        public CompraForCreateDTO(string usuarioUserName, string nombre, string apellidos, string direccion, string telefono, MetodoPago metodoPago, string? codigoDescuento , IList<CompraItemDTO> compraItems)
         {
             UsuarioUserName = usuarioUserName ?? throw new ArgumentNullException(nameof(usuarioUserName));
             Nombre = nombre ?? throw new ArgumentNullException(nameof(nombre));
@@ -19,14 +19,14 @@ namespace AppForSEII.API.DTOs
             MetodoPago = metodoPago;
             CodigoDescuento = codigoDescuento;
             
-            // TODO: Descomentar cuando la rama de CompraItemDTO se fusione
-            // CompraItems = compraItems ?? throw new ArgumentNullException(nameof(compraItems));
+           
+             CompraItems = compraItems ?? throw new ArgumentNullException(nameof(compraItems));
         }
 
         public CompraForCreateDTO()
         {
-            // TODO: Descomentar cuando la rama de CompraItemDTO se fusione
-            // CompraItems = new List<CompraItemDTO>();
+           
+            CompraItems = new List<CompraItemDTO>();
         }
 
         [EmailAddress]
@@ -56,16 +56,16 @@ namespace AppForSEII.API.DTOs
         [StringLength(10, MinimumLength = 5, ErrorMessage = "El código de descuento debe tener entre 5 y 10 caracteres")]
         public string? CodigoDescuento { get; set; }
 
-        // TODO: Descomentar cuando la rama de CompraItemDTO se fusione
-        // public IList<CompraItemDTO> CompraItems { get; set; } = new List<CompraItemDTO>();
+        
+         public IList<CompraItemDTO> CompraItems { get; set; } = new List<CompraItemDTO>();
 
         public decimal PrecioTotal
         {
             get
             {
-                // TODO: Cambiar a la lógica real cuando la rama de CompraItemDTO se fusione: 
-                // return CompraItems.Sum(ci => ci.PrecioCompra * ci.Cantidad);
-                return 0m; //Quitar esta linea cuando se fusione la rama
+                
+                return CompraItems.Sum(ci => ci.PrecioCompra * ci.Cantidad);
+                
             }
         }
 
@@ -85,8 +85,8 @@ namespace AppForSEII.API.DTOs
                    MetodoPago == dTO.MetodoPago &&
                    CodigoDescuento == dTO.CodigoDescuento &&
                    
-                   // TODO: Descomentar cuando la rama de CompraItemDTO se fusione
-                   // CompraItems.SequenceEqual(dTO.CompraItems) &&
+                   
+                    CompraItems.SequenceEqual(dTO.CompraItems) &&
                    
                    PrecioTotal == dTO.PrecioTotal;
         }
