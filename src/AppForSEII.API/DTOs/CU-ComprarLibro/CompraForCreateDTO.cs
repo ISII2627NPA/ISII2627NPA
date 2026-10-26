@@ -59,15 +59,7 @@ namespace AppForSEII.API.DTOs
         
          public IList<CompraItemDTO> CompraItems { get; set; } = new List<CompraItemDTO>();
 
-        public decimal PrecioTotal
-        {
-            get
-            {
-                
-                return CompraItems.Sum(ci => ci.PrecioCompra * ci.Cantidad);
-                
-            }
-        }
+        public decimal PrecioTotal { get; set; }
 
         protected bool CompareDate(DateTime date1, DateTime date2)
         {

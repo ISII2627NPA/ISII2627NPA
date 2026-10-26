@@ -8,7 +8,7 @@ namespace AppForSEII.API.DTOs
     public class CompraDetailDTO : CompraForCreateDTO
    
     {
-        public CompraDetailDTO(int id, DateTime fechaCompra, string usuarioUserName, string nombre, string apellidos,
+        public CompraDetailDTO(int id, DateTime fechaCompra,decimal precioTotal, string usuarioUserName, string nombre, string apellidos,
             string direccion, string telefono, MetodoPago metodoPago, string? codigoDescuento, IList<CompraItemDTO> compraItems)
            
             : base(usuarioUserName,
@@ -23,6 +23,7 @@ namespace AppForSEII.API.DTOs
         {
             Id = id;
             FechaCompra = fechaCompra;
+            PrecioTotal = precioTotal;
         }
 
         public int Id { get; set; }
