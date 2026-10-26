@@ -1,46 +1,37 @@
 using System;
 using System.Collections.Generic;
-using AppForSEII.API.Models;
 
 namespace AppForSEII.API.DTOs
 {
-    // Descomentar cuando exista ResenaForCreateDTO
-    // public class ResenaDetailDTO : ResenaForCreateDTO
-    public class ResenaDetailDTO
+    public class ResenaDetailDTO : ResenaForCreateDTO
     {
-       /* public ResenaDetailDTO(int id, DateTime fechaResena, string usuarioUserName, string nombre, string apellidos,
+        public ResenaDetailDTO(int id, DateTime fechaResena, string usuarioUserName, string nombre, string apellidos,
             string direccion, string telefono, string titulo, IList<ResenaItemDTO> resenaItems)
-            : base(usuarioUserName,
-                   nombre,
-                   apellidos,
-                   direccion,
-                   telefono,
-                   titulo,
-                   resenaItems)
-            
+            : base(usuarioUserName, nombre, apellidos, direccion, telefono, titulo, resenaItems)
         {
             Id = id;
             FechaResena = fechaResena;
         }
-*/
-        public int Id { get; set; }
 
+        public int Id { get; set; }
         public DateTime FechaResena { get; set; }
+
+        protected bool CompareDate(DateTime date1, DateTime date2)
+        {
+            return (date1.Subtract(date2) < new TimeSpan(0, 1, 0));
+        }
 
         public override bool Equals(object? obj)
         {
             return obj is ResenaDetailDTO dTO &&
-                   /* Descomentar cuando exista ResenaForCreateDTO
                    base.Equals(obj) &&
                    CompareDate(FechaResena, dTO.FechaResena) &&
-                   */
                    Id == dTO.Id;
         }
 
         public override int GetHashCode()
         {
-             // TODO: Cuando ResenaForCreateDTO exista, cambiar a: return HashCode.Combine(base.GetHashCode(), Id, FechaResena);
-            return HashCode.Combine(Id, FechaResena);
+            return HashCode.Combine(base.GetHashCode(), Id, FechaResena);
         }               
     }
 }

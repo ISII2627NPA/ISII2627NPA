@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using AppForSEII.API.Data;
-// using AppForSEII.API.DTOs; // TODO: Descomentar cuando los DTOs estén fusionados
+using AppForSEII.API.DTOs; 
 
 namespace AppForSEII.API.Controllers
 {
@@ -24,12 +24,11 @@ namespace AppForSEII.API.Controllers
 
             [HttpGet]
         [Route("[action]")]
-        // TODO: Descomentar la siguiente línea cuando ResenaDetailDTO esté fusionado
-        // [ProducesResponseType(typeof(ResenaDetailDTO), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ResenaDetailDTO), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         public async Task<ActionResult> GetDetailsForResena(int id)
         {
-            /* TODO: Descomentar la lógica real cuando ResenaDetailDTO y ResenaItemDTO estén fusionados
+            
             var resena = await _context.Resenas
                 .Where(r => r.Id == id)
                 .Include(r => r.Usuario)
@@ -63,10 +62,8 @@ namespace AppForSEII.API.Controllers
             }
 
             return Ok(resena);
-            */
+            
 
-            // Retorno temporal para que compile la rama de la Tarea 124
-            return Ok(".");
         }
     }
 }
