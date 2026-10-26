@@ -27,6 +27,7 @@ namespace AppForSEII.API.Controllers
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         public async Task<ActionResult> GetDetailsForCompras(int id)
         {
+            /*
             var compra = await _context.Compras
                 .Where(c => c.Id == id)
                 .Include(c => c.CompraItems) 
@@ -66,8 +67,8 @@ namespace AppForSEII.API.Controllers
                 _logger.LogError($"Error: Compra con id {id} no existe");
                 return NotFound();
             }
-
-            return Ok(compra);
+*/ //Aqui hay que poner return Ok(compra); cuando se fusione CompraDetailDTO en main
+            return Ok();
            
         }
     }
