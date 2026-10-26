@@ -22,8 +22,8 @@ namespace AppForSEII.API.Controllers
 
         [HttpGet]
         [Route("[action]")]
-        // TODO: Descomentar esta línea cuando el SubastaDetailDTO esté fusionado en main
-        // [ProducesResponseType(typeof(SubastaDetailDTO), (int)HttpStatusCode.OK)]
+        
+        [ProducesResponseType(typeof(SubastaDetailDTO), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         public async Task<ActionResult> GetDetailsForSubastas(int id)
         {
@@ -35,7 +35,7 @@ namespace AppForSEII.API.Controllers
                 .Include(s => s.Usuario) 
                 .Include(s => s.MetodoPago) 
     
-            /* TODO: Descomentar todo este bloque Select cuando los DTOs existan en la rama principal
+            
             .Select(s => new SubastaDetailDTO(
                 s.Id,
                 s.Usuario.UserName, 
@@ -54,7 +54,7 @@ namespace AppForSEII.API.Controllers
                     si.Descripcion
                 )).ToList()
             ))
-            */
+            
             .FirstOrDefaultAsync();
 
             if (subasta == null)
@@ -63,9 +63,9 @@ namespace AppForSEII.API.Controllers
                 return NotFound();
             }
 
-            // TODO: Cuando descomentes el Select de arriba, cambia este return a: return Ok(subasta);
-            // De momento devolvemos un Ok vacío para que el código compile y pase los checks de GitHub.
-            return Ok();
+            return Ok(subasta);
+            
+            
         }
     }
 }
