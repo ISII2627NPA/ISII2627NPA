@@ -33,7 +33,7 @@ namespace AppForSEII.API.Data {
                 SeedGenerosEditorialesYLibros(dbContext);
             }
             catch (Exception ex) {
-                logger.LogError(ex, "Ocurrió un error al inicializar los Libros, Géneros y Editoriales en la base de datos.");
+                logger.LogError(ex, "Ocurrió un error al inicializar los Libros, Géneros, Editoriales y Transacciones en la base de datos.");
             }
         }
 
@@ -171,14 +171,69 @@ namespace AppForSEII.API.Data {
 
             dbcontext.SaveChanges();
             
-            
             dbcontext.Libros.ExecuteUpdate(s => s.SetProperty(m => m.Stock, 10));
             dbcontext.SaveChanges();
+
+           
+           
+            if (!dbcontext.MetodosPago.Any()) {
+                Visa visa = new Visa("1234567812345678", new DateTime(2028, 12, 31));
+                dbcontext.Visas.Add(visa);
+
+                PayPal paypal = new PayPal("600000000");
+                dbcontext.PayPals.Add(paypal);
+
+                GooglePay gpay = new GooglePay("peter@uclm.es");
+                dbcontext.GooglePays.Add(gpay);
+
+                dbcontext.SaveChanges();
+            }
+
+           
+            var cliente = dbcontext.Users.FirstOrDefault(u => u.UserName == "peter@uclm.es");
+            var libroDune = dbcontext.Libros.FirstOrDefault(m => m.Titulo == "Dune");
+            var libro1984 = dbcontext.Libros.FirstOrDefault(m => m.Titulo == "1984");
+            var visaDb = dbcontext.Visas.FirstOrDefault();
+            var paypalDb = dbcontext.PayPals.FirstOrDefault();
+
+            if (cliente != null && libroDune != null && libro1984 != null && visaDb != null && paypalDb != null) {
+                
+              
+                if (dbcontext.Compras.FirstOrDefault(c => c.ApplicationUserId == cliente.Id) == null) {
+                    Compra compra = new Compra(cliente.Id, visaDb.Id, DateTime.Now, 35.49m, "DESC10");
+                    dbcontext.Compras.Add(compra);
+                    dbcontext.SaveChanges(); 
+
+                    CompraItem cItem1 = new CompraItem(1, libroDune.Id, compra.Id);
+                    CompraItem cItem2 = new CompraItem(1, libro1984.Id, compra.Id);
+                    dbcontext.CompraItems.AddRange(cItem1, cItem2);
+                    dbcontext.SaveChanges();
+                }
+
+               
+                if (dbcontext.Subastas.FirstOrDefault(s => s.ApplicationUserId == cliente.Id) == null) {
+                    Subasta subasta = new Subasta(DateTime.Now.AddDays(5), 50.00m, cliente.Id, paypalDb.Id);
+                    dbcontext.Subastas.Add(subasta);
+                    dbcontext.SaveChanges(); 
+
+                    SubastaItem sItem = new SubastaItem(25.00m, "Puja inicial por Dune", libroDune.Id, subasta.Id);
+                    dbcontext.SubastaItems.Add(sItem);
+                    dbcontext.SaveChanges();
+                }
+
+                
+                if (dbcontext.Resenas.FirstOrDefault(r => r.ApplicationUserId == cliente.Id) == null) {
+                    Resena resena = new Resena(cliente.Id, DateTime.Now, "Reseña de clásicos");
+                    resena.UsuarioId = cliente.Id; 
+                    dbcontext.Resenas.Add(resena);
+                    dbcontext.SaveChanges(); 
+
+                    ResenaItem rItem1 = new ResenaItem("Obra maestra de la ciencia ficción.", 5, libroDune.Id, resena.Id);
+                    ResenaItem rItem2 = new ResenaItem("Un clásico distópico imprescindible.", 4, libro1984.Id, resena.Id);
+                    dbcontext.ResenaItems.AddRange(rItem1, rItem2);
+                    dbcontext.SaveChanges();
+                }
+            }
         }
     }
 }
-
-
-
-
-    

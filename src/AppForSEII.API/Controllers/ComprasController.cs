@@ -23,7 +23,7 @@ namespace AppForSEII.API.Controllers
         [HttpGet]
         [Route("[action]")]
         // TODO: Descomentar esta línea cuando el CompraDetailDTO esté fusionado en main
-        // [ProducesResponseType(typeof(CompraDetailDTO), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(CompraDetailDTO), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         public async Task<ActionResult> GetDetailsForCompras(int id)
         {
@@ -36,20 +36,29 @@ namespace AppForSEII.API.Controllers
                     .ThenInclude(ci => ci.Libro) 
                         .ThenInclude(libro => libro.Editorial) 
                 .Include(c => c.ApplicationUser) 
+
                 .Include(c => c.MetodoPago) 
+
                 
-                /* TODO: Descomentar todo este bloque Select cuando los DTOs existan en la rama principal
+                
                 .Select(c => new CompraDetailDTO(
                     c.Id, 
                     c.FechaCompra, 
+
                     c.PrecioTotal, // <--- Añadido el precio total aquí para cuando se descomente
                     c.ApplicationUser.UserName,
+                    
+
                     c.ApplicationUser.Nombre, 
                     c.ApplicationUser.Apellidos,
                     c.ApplicationUser.Direccion, 
                     c.ApplicationUser.Telefono,
+
                     c.MetodoPago,
+                    
+
                     c.CodigoDescuento,
+                    
                     c.CompraItems.Select(ci => new CompraItemDTO(
                         ci.Libro.Id,
                         ci.Libro.Titulo, 
@@ -59,7 +68,7 @@ namespace AppForSEII.API.Controllers
                         ci.Libro.PrecioCompra
                     )).ToList<CompraItemDTO>()
                 ))
-                */
+                
                 .FirstOrDefaultAsync();
 
             if (compra == null)
@@ -68,8 +77,9 @@ namespace AppForSEII.API.Controllers
                 return NotFound();
             }
 
-            // TODO: descomentar el Select de arriba, cambiar este return a: return Ok(compra);
-            return Ok();
+
+            return Ok(compra);
+            
         }
 
         [HttpPost]
@@ -182,6 +192,7 @@ namespace AppForSEII.API.Controllers
 
             // TODO: Borrar este Ok() temporal cuando descomentes la lógica real de arriba
             return Ok();
+
         }
     }
 }
