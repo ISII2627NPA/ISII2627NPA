@@ -7,8 +7,8 @@ namespace AppForSEII.API.DTOs
 {
     public class SubastaForCreateDTO
     {
-        // TODO: Descomentar 'IList<SubastaItemDTO> subastaItems' cuando la rama de SubastaItemDTO se fusione
-        public SubastaForCreateDTO(string usuarioUserName, string nombre, string apellidos, string telefono, MetodoPago metodoPago /*, IList<SubastaItemDTO> subastaItems*/)
+        
+        public SubastaForCreateDTO(string usuarioUserName, string nombre, string apellidos, string telefono, MetodoPago metodoPago, IList<SubastaItemDTO> subastaItems)
         {
             UsuarioUserName = usuarioUserName ?? throw new ArgumentNullException(nameof(usuarioUserName));
             Nombre = nombre ?? throw new ArgumentNullException(nameof(nombre));
@@ -16,14 +16,14 @@ namespace AppForSEII.API.DTOs
             Telefono = telefono ?? throw new ArgumentNullException(nameof(telefono));
             MetodoPago = metodoPago;
             
-            // TODO: Descomentar cuando la rama de SubastaItemDTO se fusione
-            // SubastaItems = subastaItems ?? throw new ArgumentNullException(nameof(subastaItems));
+            
+            SubastaItems = subastaItems ?? throw new ArgumentNullException(nameof(subastaItems));
         }
 
         public SubastaForCreateDTO()
         {
-            // TODO: Descomentar cuando la rama de SubastaItemDTO se fusione
-            // SubastaItems = new List<SubastaItemDTO>();
+            
+            SubastaItems = new List<SubastaItemDTO>();
         }
 
         [EmailAddress]
@@ -45,16 +45,16 @@ namespace AppForSEII.API.DTOs
         [Required]
         public MetodoPago MetodoPago { get; set; }
 
-        // TODO: Descomentar cuando la rama de SubastaItemDTO se fusione
-        // public IList<SubastaItemDTO> SubastaItems { get; set; } = new List<SubastaItemDTO>();
+        
+        public IList<SubastaItemDTO> SubastaItems { get; set; } = new List<SubastaItemDTO>();
 
         public decimal PrecioTotal
         {
             get
             {
-                // TODO: Cambiar a la lógica real cuando la rama de SubastaItemDTO se fusione:
-                // return SubastaItems.Sum(si => si.PrecioPuja);
-                return 0m; // Quitar esta línea cuando se fusione la rama
+                
+                return SubastaItems.Sum(si => si.PrecioPuja);
+                
             }
         }
 
@@ -71,14 +71,15 @@ namespace AppForSEII.API.DTOs
                    Apellidos == dTO.Apellidos &&
                    Telefono == dTO.Telefono &&
                    MetodoPago == dTO.MetodoPago &&
-                   // TODO: Descomentar cuando la rama de SubastaItemDTO se fusione
-                   // SubastaItems.SequenceEqual(dTO.SubastaItems) &&
+                   
+                   SubastaItems.SequenceEqual(dTO.SubastaItems) &&
                    PrecioTotal == dTO.PrecioTotal;
         }
 
         public override int GetHashCode()
         {
-            return HashCode.Combine(UsuarioUserName, Telefono);
+    
+            return HashCode.Combine(UsuarioUserName, Nombre, Apellidos, Telefono, MetodoPago);
         }
     }
 }
