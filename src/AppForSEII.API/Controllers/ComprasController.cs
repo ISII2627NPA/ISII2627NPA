@@ -20,11 +20,12 @@ namespace AppForSEII.API.Controllers
             _logger = logger;
         }
 
-        [HttpGet]
+        [HttpPost]
         [Route("[action]")]
-        // TODO: Descomentar esta línea cuando el CompraDetailDTO esté fusionado en main
-        [ProducesResponseType(typeof(CompraDetailDTO), (int)HttpStatusCode.OK)]
-        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        [ProducesResponseType(typeof(CompraDetailDTO), (int)HttpStatusCode.Created)]
+        [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType(typeof(string), (int)HttpStatusCode.Conflict)]
+       
         public async Task<ActionResult> GetDetailsForCompras(int id)
         {
             var compra = await _context.Compras
@@ -36,29 +37,18 @@ namespace AppForSEII.API.Controllers
                     .ThenInclude(ci => ci.Libro) 
                         .ThenInclude(libro => libro.Editorial) 
                 .Include(c => c.ApplicationUser) 
-
-                .Include(c => c.MetodoPago) 
-
-                
-                
+                .Include(c => c.MetodoPago)
                 .Select(c => new CompraDetailDTO(
                     c.Id, 
                     c.FechaCompra, 
-
-                    c.PrecioTotal, // <--- Añadido el precio total aquí para cuando se descomente
+                    c.PrecioTotal, // <--- Añadido el precio total aquí
                     c.ApplicationUser.UserName,
-                    
-
                     c.ApplicationUser.Nombre, 
                     c.ApplicationUser.Apellidos,
                     c.ApplicationUser.Direccion, 
                     c.ApplicationUser.Telefono,
-
                     c.MetodoPago,
-                    
-
                     c.CodigoDescuento,
-                    
                     c.CompraItems.Select(ci => new CompraItemDTO(
                         ci.Libro.Id,
                         ci.Libro.Titulo, 
@@ -68,7 +58,6 @@ namespace AppForSEII.API.Controllers
                         ci.Libro.PrecioCompra
                     )).ToList<CompraItemDTO>()
                 ))
-                
                 .FirstOrDefaultAsync();
 
             if (compra == null)
@@ -77,33 +66,25 @@ namespace AppForSEII.API.Controllers
                 return NotFound();
             }
 
-
-            return Ok(compra);
-            
+            return Ok(compra); // <--- Actualizado para devolver el objeto
         }
 
         [HttpPost]
         [Route("[action]")]
-        // TODO: Descomentar las siguientes líneas cuando CompraDetailDTO y CompraForCreateDTO estén fusionados
-        // [ProducesResponseType(typeof(CompraDetailDTO), (int)HttpStatusCode.Created)]
-        // [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
-        // [ProducesResponseType(typeof(string), (int)HttpStatusCode.Conflict)]
-        // public async Task<ActionResult> CreateCompra(CompraForCreateDTO compraForCreate) 
-        public async Task<ActionResult> CreateCompra() // TODO: Borrar esta línea y usar la firma real de arriba
+        [ProducesResponseType(typeof(CompraDetailDTO), (int)HttpStatusCode.Created)]
+        [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType(typeof(string), (int)HttpStatusCode.Conflict)]
+        public async Task<ActionResult> CreateCompra(CompraForCreateDTO compraForCreate) 
         {
-            /* TODO: Descomentar todo este bloque de lógica cuando los DTOs existan en tu rama
-            
             if (compraForCreate.CompraItems.Count == 0)
                 ModelState.AddModelError("CompraItems", "Error! You must include at least one book to be purchased");
 
-            // Paso 5 del Caso de Uso: "cantidad de compra (valor mayor que 1)" 
             foreach (var item in compraForCreate.CompraItems) {
                 if (item.Cantidad <= 1) { 
                     ModelState.AddModelError("CompraItems", $"Error! La cantidad para el libro '{item.Titulo}' debe ser mayor que 1");
                 }
             }
 
-            // Validación manual de la longitud del código de descuento (Paso 5)
             if (!string.IsNullOrEmpty(compraForCreate.CodigoDescuento) && (compraForCreate.CodigoDescuento.Length < 5 || compraForCreate.CodigoDescuento.Length > 10)) {
                 ModelState.AddModelError("CodigoDescuento", "Error! El código de descuento debe tener entre 5 y 10 caracteres.");
             }
@@ -117,17 +98,14 @@ namespace AppForSEII.API.Controllers
 
             var libroTitulos = compraForCreate.CompraItems.Select(ci => ci.Titulo).ToList<string>();
 
-            // Eliminado el .Select() anónimo para que Entity Framework rastree las entidades originales y pueda guardar los cambios de Stock
             var libros = _context.Libros
-                .Include(l => l.CompraItems)
-                    .ThenInclude(ci => ci.Compra)
                 .Where(l => libroTitulos.Contains(l.Titulo))
                 .ToList();
 
-            user.Nombre = compraForCreate.Nombre;
-            user.Apellidos = compraForCreate.Apellidos;
-            user.Direccion = compraForCreate.Direccion;
-            user.Telefono = compraForCreate.Telefono;
+            user!.Nombre = compraForCreate.Nombre;
+            user!.Apellidos = compraForCreate.Apellidos;
+            user!.Direccion = compraForCreate.Direccion;
+            user!.Telefono = compraForCreate.Telefono;
 
             Compra compra = new Compra {
                 ApplicationUser = user,
@@ -152,7 +130,6 @@ namespace AppForSEII.API.Controllers
                     });
                     item.PrecioCompra = libro.PrecioCompra;
                     
-                    // Actualización del stock al realizar la compra
                     libro.Stock -= item.Cantidad;
                 }
             }
@@ -188,11 +165,6 @@ namespace AppForSEII.API.Controllers
             );
 
             return CreatedAtAction("GetDetailsForCompras", new { id = compra.Id }, compraDetail);
-            */
-
-            // TODO: Borrar este Ok() temporal cuando descomentes la lógica real de arriba
-            return Ok();
-
         }
     }
 }
