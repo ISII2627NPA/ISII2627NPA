@@ -7,20 +7,20 @@ namespace AppForSEII.API.DTOs
 {
     public class ResenaForCreateDTO
     {
-        public ResenaForCreateDTO(string usuarioUserName, string nombre, string apellidos, string direccion, string telefono, string titulo) //IList<ResenaItemDTO> resenaItems
-        {                                                                                                                                   // AÑADIR LUEGO
+        public ResenaForCreateDTO(string usuarioUserName, string nombre, string apellidos, string direccion, string telefono, string titulo, IList<ResenaItemDTO> resenaItems)
+        {                                                                                                                                   
             UsuarioUserName = usuarioUserName ?? throw new ArgumentNullException(nameof(usuarioUserName));
             Nombre = nombre ?? throw new ArgumentNullException(nameof(nombre));
             Apellidos = apellidos ?? throw new ArgumentNullException(nameof(apellidos));
             Direccion = direccion ?? throw new ArgumentNullException(nameof(direccion));
             Telefono = telefono ?? throw new ArgumentNullException(nameof(telefono));
             Titulo = titulo ?? throw new ArgumentNullException(nameof(titulo));
-            //ResenaItems = resenaItems ?? throw new ArgumentNullException(nameof(resenaItems));
+            ResenaItems = resenaItems ?? throw new ArgumentNullException(nameof(resenaItems));
         }
 
         public ResenaForCreateDTO()
         {
-            //ResenaItems = new List<ResenaItemDTO>();
+            ResenaItems = new List<ResenaItemDTO>();
         }
 
         [EmailAddress]
@@ -48,7 +48,7 @@ namespace AppForSEII.API.DTOs
         [StringLength(20, MinimumLength = 10, ErrorMessage = "El título debe tener entre 10 y 20 caracteres")]
         public string Titulo { get; set; } = "Reseña de prueba";
 
-        //public IList<ResenaItemDTO> ResenaItems { get; set; } = new List<ResenaItemDTO>();
+        public IList<ResenaItemDTO> ResenaItems { get; set; } = new List<ResenaItemDTO>();
 
         public override bool Equals(object? obj)
         {
@@ -58,15 +58,16 @@ namespace AppForSEII.API.DTOs
                    Apellidos == dTO.Apellidos &&
                    Direccion == dTO.Direccion &&
                    Telefono == dTO.Telefono &&
-                   Titulo == dTO.Titulo;            // AÑADIR LUEGO 
-                   //ResenaItems.SequenceEqual(dTO.ResenaItems
+                   Titulo == dTO.Titulo &&        
+                   ResenaItems.SequenceEqual(dTO.ResenaItems);
+        
+
         }
 
         public override int GetHashCode()
         {
-            // TODO: Descomentar esta línea cuando ResenaItems esté disponible y borrar el return actual
-            // return HashCode.Combine(UsuarioUserName, Nombre, Apellidos, Direccion, Telefono, Titulo, ResenaItems);
-            return HashCode.Combine(UsuarioUserName, Nombre, Apellidos, Direccion, Telefono, Titulo);   
+            return HashCode.Combine(UsuarioUserName, Nombre, Apellidos, Direccion, Telefono, Titulo, ResenaItems);
+            
         }
     }
 }
