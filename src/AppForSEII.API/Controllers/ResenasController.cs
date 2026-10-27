@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
@@ -5,10 +6,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using AppForSEII.API.Data;
-using AppForSEII.API.DTOs; 
-using System;
+using AppForSEII.API.DTOs;
 using AppForSEII.API.Models;
-
 
 namespace AppForSEII.API.Controllers
 {
@@ -31,7 +30,6 @@ namespace AppForSEII.API.Controllers
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         public async Task<ActionResult> GetDetailsForResena(int id)
         {
-            
             var resena = await _context.Resenas
                 .Where(r => r.Id == id)
                 .Include(r => r.Usuario)
@@ -65,18 +63,7 @@ namespace AppForSEII.API.Controllers
             }
 
             return Ok(resena);
-            
-
         }
-
-
-
-
-
-
-
-
-
 
         [HttpPost]
         [Route("[action]")]
@@ -98,8 +85,10 @@ namespace AppForSEII.API.Controllers
 
             var titulosLibros = resenaForCreate.ResenaItems.Select(ri => ri.Titulo).ToList();
             
+            // 1. Incluimos ResenaItems para cargar las valoraciones históricas de cada libro
             var libros = await _context.Libros
                 .Include(l => l.Editorial)
+                .Include(l => l.ResenaItems)
                 .Where(l => titulosLibros.Contains(l.Titulo))
                 .ToListAsync();
 
@@ -121,6 +110,11 @@ namespace AppForSEII.API.Controllers
                 }
                 else 
                 {
+                    // 2. Calculamos el nuevo promedio de la Calificación Media con la lista existente más la nueva calificación
+                    var sumaCalificaciones = libro.ResenaItems.Sum(ri => (double)ri.Calificacion) + item.Calificacion;
+                    var totalResenas = libro.ResenaItems.Count + 1;
+                    libro.CalificacionMedia = (decimal)(sumaCalificaciones / totalResenas);
+
                     resena.ResenaItems.Add(new ResenaItem
                     {
                         LibroId = libro.Id,
