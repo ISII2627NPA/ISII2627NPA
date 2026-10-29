@@ -44,7 +44,7 @@ namespace AppForSEII.API.Controllers
                 s.Usuario.Telefono,
                 s.FechaSubasta,
                 s.PrecioSubasta,
-                s.MetodoPago,
+                s.MetodoPago.Id,
                 s.SubastaItems.Select(si => new SubastaItemDTO(
                     si.Libro.Id,
                     si.Libro.Titulo,
@@ -90,6 +90,12 @@ namespace AppForSEII.API.Controllers
             if (user == null)
                 ModelState.AddModelError("Usuario", "Error! El usuario no está registrado.");
 
+            var metodoPago = await _context.MetodosPago.FirstOrDefaultAsync(mp => mp.Id == subastaForCreate.MetodoPago);
+            if (metodoPago == null)
+            {
+                ModelState.AddModelError("MetodoPago", "¡Error! El método de pago seleccionado no existe.");
+            }
+
             if (ModelState.ErrorCount > 0)
                 return BadRequest(new ValidationProblemDetails(ModelState));
 
@@ -107,7 +113,7 @@ namespace AppForSEII.API.Controllers
             {
                 Usuario = user,
                 FechaSubasta = DateTime.Now,
-                MetodoPago = subastaForCreate.MetodoPago,
+                MetodoPago = metodoPago,
                 SubastaItems = new List<SubastaItem>(),
                 PrecioSubasta = 0
             };
@@ -157,7 +163,7 @@ namespace AppForSEII.API.Controllers
                 user.Telefono,
                 subasta.FechaSubasta,
                 subasta.PrecioSubasta,
-                subasta.MetodoPago,
+                subasta.MetodoPago.Id,
                 subasta.SubastaItems.Select(si => new SubastaItemDTO(
                     si.LibroId,
                     libros.First(l => l.Id == si.LibroId).Titulo,

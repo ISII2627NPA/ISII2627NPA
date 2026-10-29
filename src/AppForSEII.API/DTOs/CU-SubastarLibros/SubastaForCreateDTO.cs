@@ -8,7 +8,7 @@ namespace AppForSEII.API.DTOs
     public class SubastaForCreateDTO
     {
         
-        public SubastaForCreateDTO(string usuarioUserName, string nombre, string apellidos, string telefono, MetodoPago metodoPago, IList<SubastaItemDTO> subastaItems)
+        public SubastaForCreateDTO(string usuarioUserName, string nombre, string apellidos, string telefono, int metodoPago, IList<SubastaItemDTO> subastaItems)
         {
             UsuarioUserName = usuarioUserName ?? throw new ArgumentNullException(nameof(usuarioUserName));
             Nombre = nombre ?? throw new ArgumentNullException(nameof(nombre));
@@ -43,7 +43,7 @@ namespace AppForSEII.API.DTOs
         public string Telefono { get; set; } = "666555444";
 
         [Required]
-        public MetodoPago MetodoPago { get; set; }
+        public int MetodoPago { get; set; }
 
         
         public IList<SubastaItemDTO> SubastaItems { get; set; } = new List<SubastaItemDTO>();
