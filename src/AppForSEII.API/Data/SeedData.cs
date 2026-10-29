@@ -176,61 +176,93 @@ namespace AppForSEII.API.Data {
 
            
            
-            if (!dbcontext.MetodosPago.Any()) {
-                Visa visa = new Visa("1234567812345678", new DateTime(2028, 12, 31));
-                dbcontext.Visas.Add(visa);
-
-                PayPal paypal = new PayPal("600000000");
-                dbcontext.PayPals.Add(paypal);
-
-                GooglePay gpay = new GooglePay("peter@uclm.es");
-                dbcontext.GooglePays.Add(gpay);
-
+            // --- 3 MÉTODOS DE PAGO DE CADA TIPO ---
+            if (dbcontext.Visas.Count() < 3) {
+                dbcontext.Visas.AddRange(
+                    new Visa("1234567812345678", new DateTime(2028, 12, 31)),
+                    new Visa("9876543210987654", new DateTime(2027, 10, 31)),
+                    new Visa("1111222233334444", new DateTime(2029, 05, 31))
+                );
+                dbcontext.SaveChanges();
+            }
+            if (dbcontext.PayPals.Count() < 3) {
+                dbcontext.PayPals.AddRange(
+                    new PayPal("600000000"),
+                    new PayPal("611111111"),
+                    new PayPal("622222222")
+                );
+                dbcontext.SaveChanges();
+            }
+            if (dbcontext.GooglePays.Count() < 3) {
+                dbcontext.GooglePays.AddRange(
+                    new GooglePay("peter@uclm.es"),
+                    new GooglePay("ana@uclm.es"),
+                    new GooglePay("elena@uclm.es")
+                );
                 dbcontext.SaveChanges();
             }
 
-           
+            // --- CARGAMOS DATOS PARA LAS TRANSACCIONES ---
             var cliente = dbcontext.Users.FirstOrDefault(u => u.UserName == "peter@uclm.es");
+            
             var libroDune = dbcontext.Libros.FirstOrDefault(m => m.Titulo == "Dune");
             var libro1984 = dbcontext.Libros.FirstOrDefault(m => m.Titulo == "1984");
+            var libroPilares = dbcontext.Libros.FirstOrDefault(m => m.Titulo == "Los Pilares de la Tierra");
+            var libroHobbit = dbcontext.Libros.FirstOrDefault(m => m.Titulo == "El Hobbit");
+            
             var visaDb = dbcontext.Visas.FirstOrDefault();
             var paypalDb = dbcontext.PayPals.FirstOrDefault();
+            var gpayDb = dbcontext.GooglePays.FirstOrDefault();
 
-            if (cliente != null && libroDune != null && libro1984 != null && visaDb != null && paypalDb != null) {
+            if (cliente != null && libroDune != null && libro1984 != null && libroPilares != null && libroHobbit != null && visaDb != null && paypalDb != null && gpayDb != null) {
                 
-              
-                if (dbcontext.Compras.FirstOrDefault(c => c.ApplicationUserId == cliente.Id) == null) {
-                    Compra compra = new Compra(cliente.Id, visaDb.Id, DateTime.Now, 35.49m, "DESC10");
-                    dbcontext.Compras.Add(compra);
+                // --- 3 COMPRAS ---
+                if (dbcontext.Compras.Count() < 3) {
+                    Compra compra1 = new Compra(cliente.Id, visaDb.Id, DateTime.Now.AddDays(-10), 35.49m, "DESC10");
+                    Compra compra2 = new Compra(cliente.Id, paypalDb.Id, DateTime.Now.AddDays(-5), 29.90m, null);
+                    Compra compra3 = new Compra(cliente.Id, gpayDb.Id, DateTime.Now, 22.00m, null);
+                    dbcontext.Compras.AddRange(compra1, compra2, compra3);
                     dbcontext.SaveChanges(); 
 
-                    CompraItem cItem1 = new CompraItem(1, libroDune.Id, compra.Id);
-                    CompraItem cItem2 = new CompraItem(1, libro1984.Id, compra.Id);
-                    dbcontext.CompraItems.AddRange(cItem1, cItem2);
+                    dbcontext.CompraItems.AddRange(
+                        new CompraItem(1, libroDune.Id, compra1.Id),
+                        new CompraItem(1, libro1984.Id, compra1.Id),
+                        new CompraItem(1, libroPilares.Id, compra2.Id),
+                        new CompraItem(1, libroHobbit.Id, compra3.Id)
+                    );
                     dbcontext.SaveChanges();
                 }
 
-               
-                if (dbcontext.Subastas.FirstOrDefault(s => s.ApplicationUserId == cliente.Id) == null) {
-                    Subasta subasta = new Subasta(DateTime.Now.AddDays(5), 50.00m, cliente.Id, paypalDb.Id);
-                    dbcontext.Subastas.Add(subasta);
+                // --- 3 SUBASTAS ---
+                if (dbcontext.Subastas.Count() < 3) {
+                    Subasta subasta1 = new Subasta(DateTime.Now.AddDays(5), 50.00m, cliente.Id, paypalDb.Id);
+                    Subasta subasta2 = new Subasta(DateTime.Now.AddDays(10), 15.50m, cliente.Id, visaDb.Id);
+                    Subasta subasta3 = new Subasta(DateTime.Now.AddDays(12), 22.00m, cliente.Id, gpayDb.Id);
+                    dbcontext.Subastas.AddRange(subasta1, subasta2, subasta3);
                     dbcontext.SaveChanges(); 
 
-                    SubastaItem sItem = new SubastaItem(25.00m, "Puja inicial por Dune", libroDune.Id, subasta.Id);
-                    dbcontext.SubastaItems.Add(sItem);
+                    dbcontext.SubastaItems.AddRange(
+                        new SubastaItem(25.00m, "Puja inicial por Dune", libroDune.Id, subasta1.Id),
+                        new SubastaItem(15.50m, "Puja por 1984", libro1984.Id, subasta2.Id),
+                        new SubastaItem(22.00m, "Puja por El Hobbit", libroHobbit.Id, subasta3.Id)
+                    );
                     dbcontext.SaveChanges();
                 }
 
-                
-                if (dbcontext.Resenas.FirstOrDefault(r => r.ApplicationUserId == cliente.Id) == null) {
-                    Resena resena = new Resena(cliente.Id, DateTime.Now, "Reseña de clásicos");
-                    resena.UsuarioId = cliente.Id; 
-                    dbcontext.Resenas.Add(resena);
+                // --- 3 RESEÑAS ---
+                if (dbcontext.Resenas.Count() < 3) {
+                    Resena resena1 = new Resena(cliente.Id, DateTime.Now.AddDays(-8), "Reseña de clásicos");
+                    Resena resena2 = new Resena(cliente.Id, DateTime.Now.AddDays(-3), "Me encantó el Hobbit");
+                    Resena resena3 = new Resena(cliente.Id, DateTime.Now.AddDays(-1), "Decepción con los pilares");
+                    dbcontext.Resenas.AddRange(resena1, resena2, resena3);
                     dbcontext.SaveChanges(); 
 
-                    ResenaItem rItem1 = new ResenaItem("Obra maestra de la ciencia ficción.", 5, libroDune.Id, resena.Id);
-                    ResenaItem rItem2 = new ResenaItem("Un clásico distópico imprescindible.", 4, libro1984.Id, resena.Id);
-                    dbcontext.ResenaItems.AddRange(rItem1, rItem2);
+                    dbcontext.ResenaItems.AddRange(
+                        new ResenaItem("Obra maestra de la ciencia ficción.", 5, libroDune.Id, resena1.Id),
+                        new ResenaItem("Un clásico distópico imprescindible.", 4, libro1984.Id, resena1.Id),
+                        new ResenaItem("Muy entretenido, ideal para fantasía.", 5, libroHobbit.Id, resena2.Id),
+                        new ResenaItem("Se me hizo un poco largo.", 3, libroPilares.Id, resena3.Id)
+                    );
                     dbcontext.SaveChanges();
                 }
             }
