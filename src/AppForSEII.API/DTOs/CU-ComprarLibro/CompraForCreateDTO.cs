@@ -9,14 +9,14 @@ namespace AppForSEII.API.DTOs
     public class CompraForCreateDTO
     {
        
-        public CompraForCreateDTO(string usuarioUserName, string nombre, string apellidos, string direccion, string telefono, MetodoPago metodoPago, string? codigoDescuento , IList<CompraItemDTO> compraItems)
+        public CompraForCreateDTO(string usuarioUserName, string nombre, string apellidos, string direccion, string telefono, int metodoPagoId, string? codigoDescuento , IList<CompraItemDTO> compraItems)
         {
             UsuarioUserName = usuarioUserName ?? throw new ArgumentNullException(nameof(usuarioUserName));
             Nombre = nombre ?? throw new ArgumentNullException(nameof(nombre));
             Apellidos = apellidos ?? throw new ArgumentNullException(nameof(apellidos));
             Direccion = direccion ?? throw new ArgumentNullException(nameof(direccion));
             Telefono = telefono ?? throw new ArgumentNullException(nameof(telefono));
-            MetodoPago = metodoPago;
+            MetodoPagoId = metodoPagoId;
             CodigoDescuento = codigoDescuento;
             
            
@@ -51,7 +51,7 @@ namespace AppForSEII.API.DTOs
         public string Telefono { get; set; } = "666555444";
 
         [Required]
-        public MetodoPago MetodoPago { get; set; } 
+        public int MetodoPagoId { get; set; } 
 
         [StringLength(10, MinimumLength = 5, ErrorMessage = "El código de descuento debe tener entre 5 y 10 caracteres")]
         public string? CodigoDescuento { get; set; }
@@ -74,7 +74,7 @@ namespace AppForSEII.API.DTOs
                    Apellidos == dTO.Apellidos &&
                    Direccion == dTO.Direccion &&
                    Telefono == dTO.Telefono &&
-                   MetodoPago == dTO.MetodoPago &&
+                   MetodoPagoId == dTO.MetodoPagoId &&
                    CodigoDescuento == dTO.CodigoDescuento &&
                    
                    

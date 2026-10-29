@@ -9,14 +9,14 @@ namespace AppForSEII.API.DTOs
    
     {
         public CompraDetailDTO(int id, DateTime fechaCompra,decimal precioTotal, string usuarioUserName, string nombre, string apellidos,
-            string direccion, string telefono, MetodoPago metodoPago, string? codigoDescuento, IList<CompraItemDTO> compraItems)
+            string direccion, string telefono, int metodoPagoId, string? codigoDescuento, IList<CompraItemDTO> compraItems)
            
             : base(usuarioUserName,
                    nombre,
                    apellidos,
                    direccion,
                    telefono,
-                   metodoPago,
+                   metodoPagoId,
                    codigoDescuento,
                    compraItems)
             

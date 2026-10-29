@@ -47,7 +47,7 @@ namespace AppForSEII.API.Controllers
                     c.ApplicationUser.Apellidos,
                     c.ApplicationUser.Direccion, 
                     c.ApplicationUser.Telefono,
-                    c.MetodoPago,
+                    c.MetodoPagoId,
                     c.CodigoDescuento,
                     c.CompraItems.Select(ci => new CompraItemDTO(
                         ci.Libro.Id,
@@ -88,10 +88,15 @@ namespace AppForSEII.API.Controllers
             if (!string.IsNullOrEmpty(compraForCreate.CodigoDescuento) && (compraForCreate.CodigoDescuento.Length < 5 || compraForCreate.CodigoDescuento.Length > 10)) {
                 ModelState.AddModelError("CodigoDescuento", "Error! El código de descuento debe tener entre 5 y 10 caracteres.");
             }
-
-            var user = _context.ApplicationUsers.FirstOrDefault(au => au.UserName == compraForCreate.UsuarioUserName);
+            var user = await _context.ApplicationUsers.FirstOrDefaultAsync(au => au.UserName == compraForCreate.UsuarioUserName);
+           
             if (user == null)
                 ModelState.AddModelError("CompraApplicationUser", "Error! UserName is not registered");
+            var metodoPago = await _context.MetodosPago.FindAsync(compraForCreate.MetodoPagoId);
+            if (metodoPago == null)
+            {
+                ModelState.AddModelError("MetodoPagoId", "Error! El método de pago especificado no existe.");
+            }
 
             if (ModelState.ErrorCount > 0)
                 return BadRequest(new ValidationProblemDetails(ModelState));
@@ -110,7 +115,7 @@ namespace AppForSEII.API.Controllers
             Compra compra = new Compra {
                 ApplicationUser = user,
                 FechaCompra = DateTime.Now,
-                MetodoPago = compraForCreate.MetodoPago,
+                MetodoPago = metodoPago,
                 CodigoDescuento = compraForCreate.CodigoDescuento,
                 PrecioTotal = 0,
                 CompraItems = new List<CompraItem>()
@@ -159,7 +164,7 @@ namespace AppForSEII.API.Controllers
                 compra.ApplicationUser.Apellidos,
                 compra.ApplicationUser.Direccion, 
                 compra.ApplicationUser.Telefono, 
-                compra.MetodoPago,
+                metodoPago.Id,
                 compra.CodigoDescuento,
                 compraForCreate.CompraItems
             );
