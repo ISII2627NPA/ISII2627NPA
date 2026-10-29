@@ -10,7 +10,7 @@ namespace AppForSEII.API.DTOs
     {
         
         public SubastaDetailDTO(int id, string usuarioUserName, string nombre, string apellidos, string telefono, 
-            DateTime fechaSubasta, decimal precioSubasta, MetodoPago metodoPago, 
+            DateTime fechaSubasta, decimal precioSubasta, int metodoPago, 
             IList<SubastaItemDTO> subastaItems)
             : base(usuarioUserName,
                    nombre,
