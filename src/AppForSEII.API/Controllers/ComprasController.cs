@@ -20,7 +20,7 @@ namespace AppForSEII.API.Controllers
             _logger = logger;
         }
 
-        [HttpPost]
+        [HttpGet]
         [Route("[action]")]
         [ProducesResponseType(typeof(CompraDetailDTO), (int)HttpStatusCode.Created)]
         [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
