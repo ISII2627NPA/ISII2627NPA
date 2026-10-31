@@ -23,15 +23,21 @@ namespace AppForSEII.API.DTOs
 
         public override bool Equals(object? obj)
         {
-            return obj is ResenaDetailDTO dTO &&
-                   base.Equals(obj) &&
-                   CompareDate(FechaResena, dTO.FechaResena) &&
-                   Id == dTO.Id;
-        }
+            if (obj is not ResenaDetailDTO dTO) return false;
+
+            // Comprobamos que la lista de libros de dentro también es exactamente igual
+            bool itemsEqual = (ResenaItems == null && dTO.ResenaItems == null) ||
+                            (ResenaItems != null && dTO.ResenaItems != null && System.Linq.Enumerable.SequenceEqual(ResenaItems, dTO.ResenaItems));
+
+            return base.Equals(obj) &&
+                CompareDate(FechaResena, dTO.FechaResena) &&
+                Id == dTO.Id &&
+                itemsEqual;
+                }
 
         public override int GetHashCode()
         {
             return HashCode.Combine(base.GetHashCode(), Id, FechaResena);
-        }               
+        }
     }
 }
