@@ -60,7 +60,7 @@ namespace AppForSEII.UT.SubastasController_test
         [Fact]
         [Trait("LevelTesting", "Unit Testing")]
         [Trait("Database", "WithoutFixture")]
-        public async Task GetDetailsForSubastas_OK_test()
+        public async Task GetDetailsForSubastas_Found_test()
         {
             // Organizar (Arrange)
             var simuladorMock = new Mock<ILogger<SubastasController>>();
