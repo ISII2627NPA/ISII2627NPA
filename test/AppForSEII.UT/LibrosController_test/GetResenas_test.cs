@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq; 
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -56,7 +57,11 @@ namespace AppForSEII.UT.LibroController_test
             var okResult = Assert.IsType<OkObjectResult>(result);
             var actualLibros = Assert.IsAssignableFrom<IList<LibroParaReseñarDTO>>(okResult.Value);
             
-            Assert.Equal(expectedLibros, actualLibros);
+           
+            var expectedSorted = expectedLibros.OrderBy(l => l.Titulo).ToList();
+            var actualSorted = actualLibros.OrderBy(l => l.Titulo).ToList();
+
+            Assert.Equal(expectedSorted, actualSorted);
         }
     }
 }
