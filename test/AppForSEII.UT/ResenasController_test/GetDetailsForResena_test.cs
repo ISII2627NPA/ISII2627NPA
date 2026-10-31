@@ -25,7 +25,7 @@ namespace AppForSEII.UT.ResenasController_test
 
         [Fact]
         [Trait("LevelTesting", "Unit Testing")]
-        public async Task GetDetailsForResena_Success_test()
+        public async Task GetDetailsForResena_Found_test()
         {
             var mock = new Mock<ILogger<ResenasController>>();
             var controller = new ResenasController(_context, mock.Object);
@@ -39,7 +39,7 @@ namespace AppForSEII.UT.ResenasController_test
 
         [Fact]
         [Trait("LevelTesting", "Unit Testing")]
-        public async Task GetDetailsForResena_Error_test()
+        public async Task GetDetailsForResena_NotFound_test()
         {
             var mock = new Mock<ILogger<ResenasController>>();
             var controller = new ResenasController(_context, mock.Object);
