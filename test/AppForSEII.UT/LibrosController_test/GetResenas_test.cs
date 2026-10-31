@@ -46,7 +46,7 @@ namespace AppForSEII.UT.LibroController_test
         [Theory]
         [MemberData(nameof(TestCasesForGetLibros))]
         [Trait("LevelTesting", "Unit Testing")]
-        public async Task GetLibrosParaReseñar_Success_test(string? tipoLibro, string? genero, List<LibroParaReseñarDTO> expectedLibros)
+        public async Task GetLibrosParaReseñar_OK_test(string? tipoLibro, string? genero, List<LibroParaReseñarDTO> expectedLibros)
         {
             var mock = new Mock<ILogger<LibroController>>();
             var controller = new LibroController(_context, mock.Object);
