@@ -19,45 +19,47 @@ namespace AppForSEII.API.Controllers
 
 
 
-        [HttpGet]
-        [Route("[action]")]
-        [ProducesResponseType(typeof(IList<LibroParaSubastarDTO>), (int)HttpStatusCode.OK)]
-        [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
-        public async Task<ActionResult> GetLibrosParaSubastar(string? titulo, string? editorial)
+        [HttpGet]      // Define que este endpoint responderá a peticiones HTTP de tipo GET.
+        [Route("[action]")]        // Construye la URL usando el nombre del método en el controlador (ej. /api/Libros/GetLibrosParaSubastar).
+        [ProducesResponseType(typeof(IList<LibroParaSubastarDTO>), (int)HttpStatusCode.OK)]        // Documenta para Swagger que en caso de éxito devolverá una lista de DTOs con un código 200 (OK).
+        [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]         // Documenta que puede devolver un error 400 (Bad Request) si los parámetros enviados son inválidos.
+        public async Task<ActionResult> GetLibrosParaSubastar(string? titulo, string? editorial)        // Método asíncrono que recibe los filtros opcionales (el '?' indica que pueden ser nulos) por parámetros en la URL.
         {
-            // Consulta a la base de datos usando Entity Framework Core
+            // Consulta a la base de datos usando Entity Framework Core mediante LINQ de forma asíncrona.
             IList<LibroParaSubastarDTO> librosSeleccionados = await _context.Libros
                 
-                // 1. Join con la tabla Editorial para poder acceder a su nombre
+                // 1. Eager Loading (Carga ansiosa): Realiza un JOIN en SQL con la tabla 'Editorial'.
+                // Es obligatorio hacerlo porque más abajo en el 'Select' vamos a acceder a una propiedad de esa tabla (l.Editorial.Nombre).
                 .Include(l => l.Editorial)
 
-                // 2. Aplicamos los filtros correspondientes a los flujos del caso de uso
+                // 2. Cláusula WHERE: Aplica las reglas de negocio base y los filtros solicitados por el usuario.
                 .Where(l => 
-                    l.Stock > 0 // Flujo Alternativo 0: Solo mostrar si hay stock disponible
-                    && (titulo == null || l.Titulo.Contains(titulo)) // Flujo Alternativo 1: Filtro por título
-                    && (editorial == null || l.Editorial.Nombre.Equals(editorial)) // Flujo Alternativo 1: Filtro por editorial
+                    l.Stock > 0 // Flujo Alternativo 0 (regla de negocio estricta): Solo mostrar si hay stock disponible
+                    && (titulo == null || l.Titulo.Contains(titulo)) // Flujo Alternativo 1: Filtro por título. Si 'titulo' es nulo, la condición es True y no filtra. Si trae texto, busca que el título del libro contenga ese fragmento.
+                    && (editorial == null || l.Editorial.Nombre.Equals(editorial)) // Flujo Alternativo 1: Filtro por editorial. Si 'editorial' es nulo, no filtra. Si trae texto, busca una coincidencia exacta con el nombre de la editorial.
                 )
 
-                // 3. Ordenamos por título (opcional, pero buena práctica heredada del modelo)
+                // 3. Ordenación: Garantiza que la respuesta de la base de datos venga ordenada alfabéticamente por el título.
                 .OrderBy(l => l.Titulo)
 
-                // 4. Proyectamos la entidad Libro hacia nuestro LibroParaSubastarDTO
+                // 4. Proyección: Transforma la entidad de base de datos 'Libro' (que puede tener decenas de campos internos) 
+                // en un objeto DTO limpio (LibroParaSubastarDTO) que solo contiene la información que la interfaz de usuario necesita.
                 .Select(l => new LibroParaSubastarDTO(
                     l.Id, 
                     l.Titulo, 
                     l.Autor, 
-                    l.Editorial.Nombre, // Sacamos el nombre de la tabla unida
+                    l.Editorial.Nombre,     // Extrae el nombre directamente de la relación mapeada en el 'Include'.
                     l.TipoLibro
                 ))
-                .ToListAsync();
+                .ToListAsync();      // Desencadena la ejecución real de toda la consulta SQL en la base de datos y la convierte en una lista en memoria.
 
-            if (!librosSeleccionados.Any())
+            if (!librosSeleccionados.Any())      // Comprueba de forma eficiente si la lista materializada está vacía (es decir, no hubo resultados para esos filtros).
             {
-                // Opcional: registrar en el logger si no se encuentran libros
+                // Utiliza el servicio ILogger inyectado para dejar un rastro en los registros del servidor (útil para depurar o monitorizar qué buscan los usuarios sin éxito).
                 _logger.LogInformation($"{DateTime.Now} Info: No se encontraron libros para subastar con los filtros dados.");
             }
 
-            return Ok(librosSeleccionados);
+            return Ok(librosSeleccionados);    // Devuelve un HTTP 200 (OK) adjuntando en el cuerpo de la respuesta la lista final en formato JSON.
         }
 
         
