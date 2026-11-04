@@ -61,31 +61,53 @@ namespace AppForSEII.API.Controllers
         }
 
         
-        
+       // indica que es para LEER datos. En este caso, pedir el catálogo de libros.
         [HttpGet]
+        // [Route("[action]")] coge el nombre del método para la URL: /api/Libro/GetLibrosParaComprar
         [Route("[action]")]
+        // Documentación para Swagger: Indica qué devuelve si todo va bien (una lista de DTOs con código 200 OK)
         [ProducesResponseType(typeof(IList<LibroParaComprarDTO>), (int)HttpStatusCode.OK)]
+        // Documentación para Swagger: Indica qué devuelve si hay un error de validación (código 400 Bad Request)
         [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
+
+        // Define una puerta de entrada pública y asíncrona que entregará un paquete web (éxito o error) basándose en dos filtros opcionales proporcionados por el usuario.
         public async Task<ActionResult> GetLibrosParaComprar(string? genero, double? precioMaximo)
         {
-            // Validación básica: el precio máximo no puede ser negativo
+            
+            // Comprueba si el cliente ha enviado un número y, en caso afirmativo, si ese número es menor que cero.
             if (precioMaximo != null && precioMaximo < 0)
         {
-        ModelState.AddModelError("precioMaximo", "El precio máximo no puede ser negativo");
-        _logger.LogError($"{DateTime.Now} Error: precioMaximo no puede ser negativo");
-        return BadRequest(new ValidationProblemDetails(ModelState));
+            // Anota el fallo en la "libreta de errores" de la aplicación, asociando el mensaje de texto al campo que ha fallado.
+            ModelState.AddModelError("precioMaximo", "El precio máximo no puede ser negativo");
+    
+            // Guarda un registro interno e invisible en el servidor con la fecha y hora exacta del fallo para que el equipo técnico lo revise.
+            _logger.LogError($"{DateTime.Now} Error: precioMaximo no puede ser negativo");
+    
+            // Detiene la ejecución del método y le devuelve al cliente su error estructurado junto a un código HTTP 400.
+             return BadRequest(new ValidationProblemDetails(ModelState));
         }
 
+        // Conecta con la base de datos y prepara una lista para guardar los libros encontrados.
         IList<LibroParaComprarDTO> selectLibros = await _context.Libros
+            // Trae también los datos del género y editorial del libro haciendo un JOIN de las dos tablas(datos comunes entre las dos).
             .Include(l => l.Genero)
             .Include(l => l.Editorial)
+            // FILTROS: Solo mostramos libros que se puedan comprar (Stock mayor que 0)
             .Where(l => 
-                l.Stock > 0 // Flujo básico 2: Libros disponibles (stock > 0)
-                && (genero == null || l.Genero.Nombre.Equals(genero)) // Flujo alternativo 1: filtro por género
-                && (precioMaximo == null || (double)l.PrecioCompra <= precioMaximo) // Flujo alternativo 1: filtro por precio
+                l.Stock > 0 
+
+                //Si 'genero' es null, ignora esta condición (devuelve true). 
+                 // Si 'genero' trae algo, busca que coincida exactamente con el nombre del género del libro.
+                && (genero == null || l.Genero.Nombre.Equals(genero)) 
+
+                //Igual que el anterior, pero comprobando que el precio no supere el máximo.
+                && (precioMaximo == null || (double)l.PrecioCompra <= precioMaximo) 
             )
+            // Ordena la lista alfabéticamente por el título del libro
             .OrderBy(l => l.Titulo)
-            // Aquí usamos tu constructor exacto con los 8 parámetros en tu orden
+
+            // Por cada 'Libro' (entidad de base de datos) que haya superado los filtros, 
+            // llama al constructor de nuestro DTO pasándole los datos exactos.
             .Select(l => new LibroParaComprarDTO(
                 l.Id, 
                 l.Titulo, 
@@ -97,7 +119,7 @@ namespace AppForSEII.API.Controllers
                 l.Stock
             ))
             .ToListAsync();
-
+            // Devuelve un HTTP 200 OK con la lista de libros filtrada
              return Ok(selectLibros);
             }
 
