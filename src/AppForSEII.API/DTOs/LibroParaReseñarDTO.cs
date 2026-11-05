@@ -25,6 +25,8 @@ namespace AppForSEII.API.DTOs
 
         public string Titulo { get; set; } = "Título";
 
+        // Estas validaciones aplican si alguna vez recibieras este DTO desde el exterior. 
+        // Normalmente, como es de salida, sirven más como documentación del contrato de la API.
         [StringLength(50, MinimumLength = 10, ErrorMessage = "El tipo de libro debe tener entre 10 y 50 caracteres")]
         public string TipoLibro { get; set; } = "Tapa dura";
         
@@ -42,6 +44,8 @@ namespace AppForSEII.API.DTOs
         [DataType(System.ComponentModel.DataAnnotations.DataType.Date)]
         public DateTime FechaLanzamiento { get; set; } = DateTime.Today;
 
+        // Este Equals es el que te permitía usar Assert.Equal en la prueba GetResenas_test para comparar 
+        // la lista de libros devuelta por el controlador con la esperada, una vez ordenadas alfabéticamente.
         public override bool Equals(object? obj)
         {
             return obj is LibroParaReseñarDTO dTO &&
