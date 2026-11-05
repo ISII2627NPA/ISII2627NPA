@@ -80,7 +80,8 @@ namespace AppForSEII.UT.ComprasController_test
 
             // 4. Error: Código de descuento inválido (menos de 5 caracteres)
             var compraDescuentoInvalido = new CompraForCreateDTO(_userName, _nombre, _apellidos, _direccion, _telefono, 1, "123", compraItemsValidos);
-
+            // 4b. Error: Código de descuento inválido (más de 10 caracteres)
+            var compraDescuentoLargo = new CompraForCreateDTO(_userName, _nombre, _apellidos, _direccion, _telefono, 1, "DESCUENTAZO1", compraItemsValidos);
             // 5. Error: Método de pago no existe
             var compraMetodoPagoInvalido = new CompraForCreateDTO(_userName, _nombre, _apellidos, _direccion, _telefono, 99, null, compraItemsValidos);
 
@@ -94,6 +95,7 @@ namespace AppForSEII.UT.ComprasController_test
                 new object[] { compraUsuarioFalso, "Error! UserName is not registered" },
                 new object[] { compraCantidadInvalida, $"Error! La cantidad para el libro '{_libro1Title}' debe ser mayor que 1" },
                 new object[] { compraDescuentoInvalido, "Error! El código de descuento debe tener entre 5 y 10 caracteres." },
+                new object[] { compraDescuentoLargo, "Error! El código de descuento debe tener entre 5 y 10 caracteres." }, 
                 new object[] { compraMetodoPagoInvalido, "Error! El método de pago especificado no existe." },
                 new object[] { compraSinStock, $"Error! El libro '{_libro1Title}' no está disponible en la cantidad solicitada" }
             };
