@@ -250,10 +250,17 @@ namespace AppForSEII.API.Data {
                 }
 
                 // --- 3 RESEÑAS ---
+                // --- 3 RESEÑAS ---
                 if (dbcontext.Resenas.Count() < 3) {
-                    Resena resena1 = new Resena(cliente.Id, DateTime.Now.AddDays(-8), "Reseña de clásicos");
-                    Resena resena2 = new Resena(cliente.Id, DateTime.Now.AddDays(-3), "Me encantó el Hobbit");
-                    Resena resena3 = new Resena(cliente.Id, DateTime.Now.AddDays(-1), "Decepción con los pilares");
+                    Resena resena1 = new Resena(cliente.Id, DateTime.Now.AddDays(-8), "Clásicos");
+                    resena1.UsuarioId = cliente.Id;
+
+                    Resena resena2 = new Resena(cliente.Id, DateTime.Now.AddDays(-3), "Me encantó");
+                    resena2.UsuarioId = cliente.Id;
+
+                    Resena resena3 = new Resena(cliente.Id, DateTime.Now.AddDays(-1), "Decepción");
+                    resena3.UsuarioId = cliente.Id;
+
                     dbcontext.Resenas.AddRange(resena1, resena2, resena3);
                     dbcontext.SaveChanges(); 
 
