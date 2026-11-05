@@ -168,7 +168,7 @@ namespace AppForSEII.API.Controllers
                 var libro = libros.FirstOrDefault(l => l.Titulo == item.Titulo);
                 
                 // Comprueba si el libro no existe, o si el cliente está pidiendo más unidades de las que hay en stock.
-                if ((libro == null) || (item.Cantidad > libro.Stock)) {
+                if (item.Cantidad > libro.Stock) {
                     //Apunta u nerror de stock
                     ModelState.AddModelError("CompraItems", $"Error! El libro '{item.Titulo}' no está disponible en la cantidad solicitada");
                 }
