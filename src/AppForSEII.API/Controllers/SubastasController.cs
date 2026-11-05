@@ -85,7 +85,7 @@ namespace AppForSEII.API.Controllers
         public async Task<ActionResult> CreateSubasta(SubastaForCreateDTO subastaForCreate)
         {
             // 1. Validación (Flujo Alternativo): Comprueba que la lista de libros a subastar no esté vacía o nula.
-            if (subastaForCreate.SubastaItems == null || subastaForCreate.SubastaItems.Count == 0)
+            if (subastaForCreate.SubastaItems.Count == 0)
                 // ModelState acumula los errores de validación. Clave "SubastaItems", Valor "mensaje de error".
                 ModelState.AddModelError("SubastaItems", "Error! Debe incluir al menos un libro en la lista de pujas.");
 
