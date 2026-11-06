@@ -234,3 +234,27 @@ namespace AppForSEII.API.Controllers
         }
     }
 }
+
+/*
+PRUEBA EN LA API POST
+{
+"usuarioUserName": "peter@uclm.es",
+  "nombre": "Peter",
+  "apellidos": "Jackson",
+  "direccion": "Calle Nueva 123",
+  "telefono": "600112233",
+  "metodoPagoId": 1,
+  "codigoDescuento": "UCLM1234",
+  "compraItems": [
+    {
+      "libroId": 1,
+      "titulo": "Dune",
+      "genero": "Ciencia Ficción",
+      "editorial": "Minotauro",
+      "cantidad": 2,
+      "precioCompra": 0
+    }
+  ],
+  "precioTotal": 0
+}
+*/
