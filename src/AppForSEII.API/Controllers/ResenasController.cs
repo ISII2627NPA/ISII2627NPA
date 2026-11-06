@@ -248,4 +248,38 @@ namespace AppForSEII.API.Controllers
             return CreatedAtAction("GetDetailsForResena", new { id = resena.Id }, resenaDetail);
         }
     }
+
+
+
+
+
+
+
+
+/*
+    {
+    "usuarioUserName": "peter@uclm.es", 
+    "nombre": "Peter",
+    "apellidos": "Jackson",
+    "direccion": "Avda. España s/n, Albacete",
+    "telefono": "600123456",
+    "titulo": "Mi reseña de examen", 
+    "resenaItems": [
+        {
+        "libroId": 1, 
+        "titulo": "Dune",
+        "editorial": "Minotauro",
+        "tipoLibro": "Bolsillo",
+        "calificacion": 5, 
+        "descripcion": "Un clásico imprescindible. Me ha encantado."
+        }
+    ]
+    }
+*/
+
+
+
+
+
+    
 }
