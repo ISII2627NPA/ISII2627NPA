@@ -15,6 +15,7 @@ namespace AppForSEII.UT.ComprasController_test
     {
         public GetCompras_test()
         {
+            // 1. Creamos las entidades básicas (Géneros, Editoriales y Libros)
             var generos = new List<Genero>() {
                 new Genero { Nombre = "Sci - Fi" },
                 new Genero { Nombre = "Drama" }
@@ -29,7 +30,7 @@ namespace AppForSEII.UT.ComprasController_test
                 new Libro { Titulo = "The man in the high castle", Genero = generos[1], Editorial = editoriales[0], Autor = "Philip K. Dick", FechaLanzamiento = new DateTime(2015, 01, 01), PrecioCompra = 10.0m, Stock = 0 }
             };
 
-            // Creamos un método de pago necesario para el Include del controlador
+            // 2. Creamos las dependencias obligatorias de una Compra: un Método de Pago y un Usuario
             var metodoPago = new PayPal("6785849");
             metodoPago.Id = 1;
 
@@ -45,6 +46,7 @@ namespace AppForSEII.UT.ComprasController_test
 
             var fechaCompra = new DateTime(2026, 10, 29);
 
+            // 3. Construimos la Compra principal enlazándola con el usuario y el método de pago
             // Constructor de Compra: (applicationUserId, metodoPagoId, fechaCompra, precioTotal, codigoDescuento)
             var compra = new Compra(user.Id, 1, fechaCompra, 10.0m, null)
             {
@@ -52,7 +54,7 @@ namespace AppForSEII.UT.ComprasController_test
                 MetodoPago = metodoPago
             };
 
-            // Añadimos el ítem de la compra
+           // 4. Añadimos el "ticket" a la compra (1 unidad de El Señor de los Anillos)
             compra.CompraItems.Add(new CompraItem { 
                 Libro = libros[0], 
                 Cantidad = 1, 
@@ -60,6 +62,8 @@ namespace AppForSEII.UT.ComprasController_test
                 
             });
 
+            // 5. Guardamos TODO en la base de datos de prueba. 
+            // Si falta el SaveChanges(), la BD estará vacía y los tests fallarán.
             _context.ApplicationUsers.Add(user);
             _context.AddRange(generos);
             _context.AddRange(editoriales);
@@ -69,21 +73,28 @@ namespace AppForSEII.UT.ComprasController_test
             _context.SaveChanges();
         }
 
+        // [Fact] porque solo probamos un escenario concreto sin parámetros de entrada
         [Fact]
         [Trait("Database", "WithoutFixture")]
         [Trait("LevelTesting", "Unit Testing")]
         public async Task GetCompra_NotFound_test()
         {
-            // Arrange
+            /// --- ARRANGE ---
+            // Creamos el doble (Mock) del sistema de Logs para engañar al controlador
             var mock = new Mock<ILogger<ComprasController>>();
             ILogger<ComprasController> logger = mock.Object;
 
+            // Instanciamos el controlador con la BD llena del paso anterior
             var controller = new ComprasController(_context, logger);
 
-            // Act
+            // --- ACT ---
+            // Le pedimos al controlador que busque los detalles de la compra con ID = 0.
+            // (Como las IDs en bases de datos empiezan en 1, sabemos seguro que la 0 no existe).
             var result = await controller.GetDetailsForCompras(0);
 
-            //Assert
+            // --- ASSERT ---
+            // Comprobamos que el controlador ha respondido devolviendo un objeto de tipo NotFoundResult.
+            // Esto equivale a que la API devuelve un código HTTP 404 (Not Found) al cliente.
             Assert.IsType<NotFoundResult>(result);
         }
 
@@ -92,14 +103,18 @@ namespace AppForSEII.UT.ComprasController_test
         [Trait("Database", "WithoutFixture")]
         public async Task GetCompra_Found_test()
         {
-            // Arrange
+            // --- ARRANGE ---
+            // Esta parte igual que antes
             var mock = new Mock<ILogger<ComprasController>>();
             ILogger<ComprasController> logger = mock.Object;
             var controller = new ComprasController(_context, logger);
-            
+
+            // Fecha de la compra( la misma que arriba)
             var fechaCompra = new DateTime(2026, 10, 29); 
 
-            // Constructor de CompraDetailDTO con los datos ficticios
+            // Construimos nuestra "Bola de Cristal": el DTO exacto que esperamos recibir.
+            // Copiamos a mano los datos de Peter Jackson y del Señor de los Anillos 
+            // que metimos en el constructor.
             var expectedCompra = new CompraDetailDTO(
                 1, 
                 fechaCompra, 
@@ -115,15 +130,22 @@ namespace AppForSEII.UT.ComprasController_test
             );
 
             // Constructor de CompraItemDTO
+            // Añadimos el ítem esperado (1 unidad a 10.0€)
             expectedCompra.CompraItems.Add(new CompraItemDTO(1, "The lord of the rings", "Sci - Fi", "Planeta", 1, 10.0m));
 
-            // Act 
+            // --- ACT ---
+            // Llamamos a la API pidiendo la compra con ID = 1 (la de Peter Jackson)
             var result = await controller.GetDetailsForCompras(1);
 
-            //Assert
+            // --- ASSERT ---
+            // 1. Comprobamos la caja exterior: ¿Es un HTTP 200 OK?
             var okResult = Assert.IsType<OkObjectResult>(result);
-            var compraDTOActual = Assert.IsType<CompraDetailDTO>(okResult.Value);
             
+            // 2. Desempaquetamos la caja: ¿El contenido es exactamente de tipo CompraDetailDTO?
+            var compraDTOActual = Assert.IsType<CompraDetailDTO>(okResult.Value);
+
+            // 3. La prueba definitiva: Comparamos el DTO que montamos a mano (expectedCompra)
+            // contra el que acaba de calcular y devolver el controlador (compraDTOActual).
             Assert.Equal(expectedCompra, compraDTOActual);
         }
     }
