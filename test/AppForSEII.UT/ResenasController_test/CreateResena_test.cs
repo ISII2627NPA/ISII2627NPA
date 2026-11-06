@@ -1,251 +1,115 @@
-using System;
-using System.Linq;
-using System.Net;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using AppForSEII.API.Data;
+using Moq;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Xunit;
+
+// Referencias a tu proyecto principal de la API
+using AppForSEII.API.Controllers;
 using AppForSEII.API.DTOs;
 using AppForSEII.API.Models;
 
-namespace AppForSEII.API.Controllers
+namespace AppForSEII.UT.ResenasController_test
 {
-    // --- ETIQUETAS DE CLASE ---
-    // [Route] define la URL base para todas las funciones de este archivo.
-    // Al poner "[controller]", el framework toma el nombre de la clase ("ResenasController"), le quita la palabra "Controller" y la URL queda como: api/Resenas
-    [Route("api/[controller]")]
-    
-    // [ApiController] es una etiqueta inteligente de ASP.NET. Hace varias cosas automáticas, por ejemplo:
-    // Si un DTO entra con un email mal escrito (según las Data Annotations), esta etiqueta rechaza la petición con un Error 400 antes de que el código siquiera empiece a ejecutarse.
-    [ApiController]
-    public class ResenasController : ControllerBase
+    public class CreateResenas_test : AppForSEII4SqliteUT
     {
-        // --- INYECCIÓN DE DEPENDENCIAS ---
-        // "readonly" significa que estas variables solo se pueden asignar una vez al construir la clase, protegiéndolas de borrados accidentales.
-        private readonly ApplicationDbContext _context; // Nuestra conexión directa a las tablas de la base de datos SQLite.
-        private readonly ILogger<ResenasController> _logger; // Herramienta para escribir mensajes y errores en la terminal del servidor.
+        // --- CONSTANTES PARA LOS DATOS DE PRUEBA ---
+        private const string _userName = "elena.navarro@uclm.es";
+        private const string _nombre = "Elena";
+        private const string _apellidos = "Navarro";
+        private const string _direccion = "Avda. España s/n, Albacete";
+        private const string _telefono = "666555444";
+        private const string _tituloResena = "Mi opinión sobre estos libros";
 
-        // Constructor: Cuando alguien hace una petición a la API, el servidor crea una instancia de este controlador
-        // y le inyecta (le pasa automáticamente) el context y el logger ya configurados y listos para usar.
-        public ResenasController(ApplicationDbContext context, ILogger<ResenasController> logger)
+        private const string _libro1Title = "Dune";
+        private const string _libro1Editorial = "Minotauro";
+        private const string _libro1Tipo = "Bolsillo";
+        
+        // CONSTRUCTOR: Prepara la BD en memoria antes de CADA test
+        public CreateResenas_test()
         {
-            _context = context;
-            _logger = logger;
+            var user = new ApplicationUser { Id = "1", UserName = _userName, Email = _userName, Nombre = _nombre, Apellidos = _apellidos, Direccion = _direccion, Telefono = _telefono };
+            var genero = new Genero { Nombre = "Ciencia Ficción" };
+            var editorial = new Editorial { Nombre = _libro1Editorial };
+            
+            // Creamos el libro con una nota media inicial de 4.0
+            var libro = new Libro { Id = 1, Titulo = _libro1Title, Autor = "Frank Herbert", TipoLibro = _libro1Tipo, CalificacionMedia = 4.0m, FechaLanzamiento = new DateTime(1965, 8, 1), Genero = genero, Editorial = editorial };
+
+            // Añadimos la reseña antigua al historial para simular ese 4.0 previo
+            var resenaPrevia = new Resena { Id = 1, Usuario = user, FechaResena = DateTime.Now, Titulo = "Reseña antigua" };
+            var resenaItemPrevio = new ResenaItem { LibroId = 1, ResenaId = 1, Calificacion = 4, Descripcion = "Muy buen libro" };
+            libro.ResenaItems = new List<ResenaItem> { resenaItemPrevio };
+
+            _context.Users.Add(user);
+            _context.Generos.Add(genero);
+            _context.Editoriales.Add(editorial);
+            _context.Libros.Add(libro);
+            _context.Resenas.Add(resenaPrevia);
+            _context.SaveChanges();
         }
 
-        // ==============================================================================
-        // MÉTODO 1: GET DETAILS (Caso de Uso: Ver detalles de una reseña específica)
-        // ==============================================================================
-
-        // [HttpGet] indica que esto es una consulta de solo lectura (como entrar a una página web).
-        [HttpGet]
-        // "[action]" añade el nombre del método a la URL final: api/Resenas/GetDetailsForResena
-        [Route("[action]")]
-        // Documentación Swagger: Avisamos de que podemos devolver el DTO completo (HTTP 200 OK) o un error si no existe (HTTP 404 NotFound).
-        [ProducesResponseType(typeof(ResenaDetailDTO), (int)HttpStatusCode.OK)]
-        [ProducesResponseType((int)HttpStatusCode.NotFound)]
-        
-        // El método recibe un número entero "id" por la URL (ej: api/Resenas/GetDetailsForResena?id=1)
-        public async Task<ActionResult> GetDetailsForResena(int id)
+        // --- ORIGEN DE DATOS PARA LOS CASOS DE ERROR ---
+        public static IEnumerable<object[]> TestCasesFor_CreateResena()
         {
-            // Buscamos en la base de datos de forma asíncrona ("await")
-            var resena = await _context.Resenas
-                
-                // ".Where": Primera criba. Queremos únicamente la reseña cuyo ID coincida con el número que nos han pasado.
-                .Where(r => r.Id == id)
-                
-                // ".Include": Hacemos un INNER JOIN a la tabla de Usuarios para traernos quién escribió la reseña.
-                .Include(r => r.Usuario)
-                
-                // ".Include": Hacemos otro INNER JOIN a la tabla intermedia "ResenaItems" para ver qué libros se valoraron.
-                .Include(r => r.ResenaItems)
-                    // ".ThenInclude": Como estamos dentro de "ResenaItems", damos un salto más profundo hacia el Libro asociado a ese ítem.
-                    .ThenInclude(ri => ri.Libro)
-                        // ".ThenInclude": Y desde el Libro, damos un último salto para traernos el nombre de su Editorial.
-                        .ThenInclude(l => l.Editorial)
-                
-                // ".Select": Proyección. Transformamos todo ese amasijo de tablas SQL en nuestro elegante ResenaDetailDTO.
-                .Select(r => new ResenaDetailDTO(
-                    r.Id,
-                    r.FechaResena,
-                    r.Usuario.UserName,  // Sacado del primer .Include
-                    r.Usuario.Nombre,
-                    r.Usuario.Apellidos,
-                    r.Usuario.Direccion,
-                    r.Usuario.Telefono,
-                    r.Titulo,
-                    
-                    // Como el DTO pide una Lista interna de ítems, abrimos otro .Select interno para transformar la colección de libros.
-                    r.ResenaItems.Select(ri => new ResenaItemDTO(
-                        ri.Libro.Id,
-                        ri.Libro.Titulo, // Sacado del primer .ThenInclude
-                        ri.Libro.Editorial.Nombre, // Sacado del segundo .ThenInclude
-                        ri.Libro.TipoLibro,
-                        ri.Calificacion,
-                        ri.Descripcion
-                    )).ToList() // .ToList() convierte este sub-select en una lista de C# real.
-                ))
-                // ".FirstOrDefaultAsync()": Ejecuta la consulta SQL entera y nos devuelve el primer resultado. 
-                // Si el Where no encontró ningún ID válido, devuelve "null" sin dar un error del programa.
-                .FirstOrDefaultAsync();
+            var itemsValidos = new List<ResenaItemDTO> { new ResenaItemDTO(1, _libro1Title, _libro1Editorial, _libro1Tipo, 5, "Me ha encantado.") };
 
-            // Si es null, significa que nos han pedido un ID que no existe (ej: ID = 999).
-            if (resena == null)
-            {
-                // Dejamos constancia en la consola del servidor.
-                _logger.LogError($"Error: La reseña con id {id} no existe");
-                // Le devolvemos al cliente un Error HTTP 404 (Not Found / No Encontrado).
-                return NotFound();
-            }
+            var resenaSinItems = new ResenaForCreateDTO(_userName, _nombre, _apellidos, _direccion, _telefono, _tituloResena, new List<ResenaItemDTO>());
+            var resenaUsuarioFalso = new ResenaForCreateDTO("falso@uclm.es", _nombre, _apellidos, _direccion, _telefono, _tituloResena, itemsValidos);
+            var resenaLibroFalso = new ResenaForCreateDTO(_userName, _nombre, _apellidos, _direccion, _telefono, _tituloResena, 
+                new List<ResenaItemDTO> { new ResenaItemDTO(99, "LibroFalso", "Ed", "Tipo", 5, "Genial") });
 
-            // Si lo encontró, lo envuelve en un código 200 (OK) y lo manda.
-            return Ok(resena);
-        }
-
-
-        // ==============================================================================
-        // MÉTODO 2: POST CREATE (Caso de Uso: Crear una nueva reseña en el sistema)
-        // ==============================================================================
-
-        // [HttpPost] indica que esta petición trae un paquete de datos oculto en el cuerpo (Body) para insertarlo en la base de datos.
-        [HttpPost]
-        [Route("[action]")]
-        // Documentación Swagger: Avisamos de que si sale bien, devolvemos un 201 (Created). Si hay error de datos, 400 (BadRequest). Si peta el servidor, 409 (Conflict).
-        [ProducesResponseType(typeof(ResenaDetailDTO), (int)HttpStatusCode.Created)]
-        [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
-        [ProducesResponseType(typeof(string), (int)HttpStatusCode.Conflict)]
-        
-        // Recibe automáticamente el JSON del cliente y lo convierte en el objeto "resenaForCreate" (ResenaForCreateDTO).
-        public async Task<ActionResult> CreateResena(ResenaForCreateDTO resenaForCreate) 
-        {
-            // --- VALIDACIONES DE NEGOCIO ---
-            
-            // Verificamos el Flujo Alternativo 1: ¿La lista de libros viene vacía o nula?
-            if (resenaForCreate.ResenaItems.Count == 0)
-                // "ModelState.AddModelError" es el almacén de errores de ASP.NET. Añadimos un error manual al saco.
-                ModelState.AddModelError("ResenaItems", "¡Error! Debes seleccionar al menos un libro para hacer la reseña.");
-
-            // Verificamos si el correo electrónico (UserName) pertenece a un usuario que realmente exista en la tabla ApplicationUsers.
-            var user = await _context.ApplicationUsers.FirstOrDefaultAsync(au => au.UserName == resenaForCreate.UsuarioUserName);
-            if (user == null)
-                ModelState.AddModelError("Usuario", "¡Error! El usuario no está registrado.");
-
-            // Si después de estas comprobaciones el saco de errores tiene algo (ErrorCount > 0)...
-            if (ModelState.ErrorCount > 0)
-                // Cortamos de raíz y le devolvemos al cliente un Error HTTP 400 junto con los detalles de qué hizo mal.
-                return BadRequest(new ValidationProblemDetails(ModelState));
-
-            // --- LECTURA PREVIA PARA PODER ACTUALIZAR LAS NOTAS ---
-            
-            // Sacamos solo los textos (Títulos) de los libros que el usuario ha mandado en su JSON.
-            var titulosLibros = resenaForCreate.ResenaItems.Select(ri => ri.Titulo).ToList();
-            
-            // Vamos a la base de datos y cargamos esos libros en memoria.
-            var libros = await _context.Libros
-                .Include(l => l.Editorial)
-                // OJO: Incluimos sus reseñas anteriores (ResenaItems) porque las necesitaremos para calcular la media aritmética luego.
-                .Include(l => l.ResenaItems)
-                // ".Contains" en SQL se traduce como un "WHERE Titulo IN ('Dune', '1984', ...)"
-                .Where(l => titulosLibros.Contains(l.Titulo))
-                .ToListAsync();
-
-            // --- PREPARACIÓN DEL OBJETO A GUARDAR ---
-            
-            // Creamos un nuevo objeto del Modelo "Resena" (la entidad real de la base de datos).
-            Resena resena = new Resena
-            {
-                Usuario = user, // Enlazamos el usuario que encontramos arriba.
-                FechaResena = DateTime.Now, // Le estampamos la fecha y hora actuales del servidor.
-                Titulo = resenaForCreate.Titulo,
-                ResenaItems = new List<ResenaItem>() // Inicializamos la lista de libros valorados vacía para irla llenando.
+            var allTests = new List<object[]>
+            { 
+                new object[] { resenaSinItems, "¡Error! Debes seleccionar al menos un libro para hacer la reseña." },
+                new object[] { resenaUsuarioFalso, "¡Error! El usuario no está registrado." },
+                new object[] { resenaLibroFalso, "¡Error! El libro 'LibroFalso' no existe en el sistema." }
             };
 
-            // Recorremos uno por uno los ítems que mandó el usuario en su petición (el DTO).
-            foreach (var item in resenaForCreate.ResenaItems) 
-            {
-                // Buscamos si este título existe en la lista de libros que sacamos de la BD.
-                var libro = libros.FirstOrDefault(l => l.Titulo == item.Titulo);
-                
-                if (libro == null) 
-                {
-                    // Si el usuario manipuló el JSON y mandó el título de un libro que no existe.
-                    ModelState.AddModelError("Libro", $"¡Error! El libro '{item.Titulo}' no existe en el sistema.");
-                }
-                else 
-                {
-                    // === CÁLCULO MATEMÁTICO DE LA NUEVA CALIFICACIÓN MEDIA ===
-                    // 1. Entramos al historial (libro.ResenaItems), cogemos todas sus calificaciones antiguas, y las sumamos (.Sum).
-                    // Luego a esa suma histórica, le sumamos la calificación de la reseña nueva que está entrando ahora (+ item.Calificacion).
-                    var sumaCalificaciones = libro.ResenaItems.Sum(ri => (double)ri.Calificacion) + item.Calificacion;
-                    
-                    // 2. Contamos cuántas reseñas antiguas tenía (.Count) y le sumamos 1 (la nueva).
-                    var totalResenas = libro.ResenaItems.Count + 1;
-                    
-                    // 3. Dividimos para sacar la media, y como Entity Framework está "vigilando" el objeto libro,
-                    // al modificar su propiedad "CalificacionMedia", el sistema lanzará un "UPDATE Libros SET..." cuando guardemos.
-                    libro.CalificacionMedia = (decimal)(sumaCalificaciones / totalResenas);
+            return allTests;
+        }
 
-                    // Creamos el ítem de la tabla intermedia y lo metemos en la lista de la Reseña.
-                    resena.ResenaItems.Add(new ResenaItem
-                    {
-                        LibroId = libro.Id, // El ID numérico del libro en la BD.
-                        Resena = resena, // Le asignamos el objeto reseña padre (el que instanciamos arriba).
-                        Calificacion = item.Calificacion,
-                        Descripcion = item.Descripcion
-                    });
-                }
-            }
+        // --- TEST DE ERRORES ---
+        [Theory]
+        [Trait("LevelTesting", "Unit Testing")]
+        [MemberData(nameof(TestCasesFor_CreateResena))]
+        public async Task CreateResena_Error_test(ResenaForCreateDTO resenaDTO, string errorExpected)
+        {
+            var mock = new Mock<ILogger<ResenasController>>();
+            var controller = new ResenasController(_context, mock.Object);
 
-            // Si algún libro del bucle no existía, saltará aquí este seguro y parará la inserción devolviendo un 400.
-            if (ModelState.ErrorCount > 0) 
-                return BadRequest(new ValidationProblemDetails(ModelState));
+            var result = await controller.CreateResena(resenaDTO);
 
-            // --- GUARDADO EN BASE DE DATOS ---
+            var badRequestResult = Assert.IsType<BadRequestObjectResult>(result);
+            var problemDetails = Assert.IsType<ValidationProblemDetails>(badRequestResult.Value);
+
+            var errorActual = problemDetails.Errors.First().Value[0];
+            Assert.StartsWith(errorExpected, errorActual);
+        }
+
+        // --- TEST DE ÉXITO ---
+        [Fact]
+        [Trait("LevelTesting", "Unit Testing")]
+        public async Task CreateResena_Success_test()
+        {
+            var mock = new Mock<ILogger<ResenasController>>();
+            var controller = new ResenasController(_context, mock.Object);
+
+            var itemsNuevos = new List<ResenaItemDTO> { new ResenaItemDTO(1, _libro1Title, _libro1Editorial, _libro1Tipo, 5, "Obra maestra.") };
+            var resenaValida = new ResenaForCreateDTO(_userName, _nombre, _apellidos, _direccion, _telefono, _tituloResena, itemsNuevos);
+
+            var result = await controller.CreateResena(resenaValida);
+
+            var createdResult = Assert.IsType<CreatedAtActionResult>(result);
+            var actualResenaDetailDTO = Assert.IsType<ResenaDetailDTO>(createdResult.Value);
+
+            Assert.Equal(_tituloResena, actualResenaDetailDTO.Titulo);
             
-            // ".Add" coge nuestro objeto Resena entero (con todos sus ítems dentro) y le pone una marca de "Pendiente de insertar".
-            _context.Add(resena);
-
-            try{
-                // ".SaveChangesAsync()" es el momento crítico. Convierte los objetos pendientes en sentencias "INSERT INTO" de SQL 
-                // y los dispara contra la base de datos real. 
-                await _context.SaveChangesAsync();
-            }
-            catch (Exception ex) {
-                // Si justo en ese milisegundo la base de datos se cayó o hubo un choque de IDs, lo atrapamos con este "catch".
-                _logger.LogError(ex.Message); // Lo apuntamos en el log para investigarlo después.
-                return Conflict("Error al guardar la reseña: " + ex.Message); // Y le devolvemos al usuario un Error HTTP 409 (Conflicto).
-            }
-
-            // --- RESPUESTA TRAS EL ÉXITO ---
-            
-            // Si el SaveChangesAsync funcionó, el objeto "resena" ya tiene un ID real asignado por SQLite.
-            // Ahora, construimos manualmente un DTO "GetDetails" con toda la info, porque las buenas prácticas de las API REST
-            // dictan que cuando creas algo (POST), debes devolverle al usuario el objeto recién creado tal como quedó.
-            var resenaDetail = new ResenaDetailDTO(
-                resena.Id, // El ID nuevecito generado por la BD.
-                resena.FechaResena,
-                user.UserName, 
-                resenaForCreate.Nombre, 
-                resenaForCreate.Apellidos, 
-                resenaForCreate.Direccion, 
-                resenaForCreate.Telefono, 
-                resena.Titulo,
-                resena.ResenaItems.Select(ri => new ResenaItemDTO(
-                    ri.LibroId, 
-                    // Como el libro real se guardó en nuestra variable "libros" durante la búsqueda inicial, 
-                    // lo sacamos de ahí (.First) para poder poner su título y editorial en el DTO de salida sin hacer otra consulta SQL.
-                    libros.First(l => l.Id == ri.LibroId).Titulo, 
-                    libros.First(l => l.Id == ri.LibroId).Editorial.Nombre, 
-                    libros.First(l => l.Id == ri.LibroId).TipoLibro, 
-                    ri.Calificacion, 
-                    ri.Descripcion
-                )).ToList()
-            );
-
-            // Devolvemos HTTP 201 (Created). El primer parámetro avisa al usuario qué método (GetDetailsForResena) 
-            // puede usar en el futuro para ver su reseña, el segundo es la ruta (su nuevo ID), y el tercero es el objeto DTO que acabamos de montar.
-            return CreatedAtAction("GetDetailsForResena", new { id = resena.Id }, resenaDetail);
+            // Verificamos el cálculo de la nota media (4.0 previo + 5.0 nuevo = 4.5)
+            var libroActualizado = _context.Libros.First(l => l.Titulo == _libro1Title);
+            Assert.Equal(4.5m, libroActualizado.CalificacionMedia);
         }
     }
 }
