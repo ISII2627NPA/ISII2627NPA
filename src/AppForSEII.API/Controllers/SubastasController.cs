@@ -31,9 +31,9 @@ namespace AppForSEII.API.Controllers
         {
             var subasta = await _context.Subastas        // Consulta asíncrona a la base de datos usando Entity Framework Core y LINQ.
                 .Where(s => s.Id == id)          // 1. Filtro inicial: Buscamos únicamente la subasta cuyo ID coincida con el parámetro recibido.
-                // 2. Eager Loading (Carga de relaciones): Hacemos JOINs explícitos con las tablas relacionadas.
-                // Nota: Al usar .Select() más abajo, EF Core a menudo infiere estos JOINs automáticamente, 
-                // pero dejarlos explícitos ayuda a la legibilidad y asegura la carga de toda la jerarquía.
+                                                 // 2. Eager Loading (Carga de relaciones): Hacemos JOINs explícitos con las tablas relacionadas.
+                                                 // Nota: Al usar .Select() más abajo, EF Core a menudo infiere estos JOINs automáticamente, 
+                                                 // pero dejarlos explícitos ayuda a la legibilidad y asegura la carga de toda la jerarquía.
                 .Include(s => s.SubastaItems)
                     .ThenInclude(si => si.Libro)      // Navegamos al Libro dentro de cada Item...
                         .ThenInclude(l => l.Editorial)      // ...y a la Editorial dentro de cada Libro.
@@ -202,5 +202,26 @@ namespace AppForSEII.API.Controllers
             // donde se puede consultar este nuevo recurso, el ID recién creado, y el objeto DTO en el cuerpo del mensaje.
             return CreatedAtAction("GetDetailsForSubastas", new { id = subasta.Id }, subastaDetail);
         }
+
+        //Datos para probar el post de subastas
+        /*
+        {
+            "usuarioUserName": "peter@uclm.es",
+            "nombre": "Peter",
+            "apellidos": "Caballero",
+            "telefono": "666666666",
+            "metodoPago": 1,
+            "subastaItems": [
+                {
+                    "libroId": 1,
+                    "titulo": "Dune",
+                    "autor": "Frank Herbert",
+                    "editorial": "Minotauro",
+                    "precioPuja": 25.50,
+                    "descripcion": "Libro en perfecto estado, casi sin uso."
+                }
+            ]
+        }
+        */
     }
 }
