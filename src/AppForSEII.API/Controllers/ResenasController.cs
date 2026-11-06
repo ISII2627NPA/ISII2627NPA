@@ -122,7 +122,7 @@ namespace AppForSEII.API.Controllers
             // --- VALIDACIONES DE NEGOCIO ---
             
             // Verificamos el Flujo Alternativo 1: ¿La lista de libros viene vacía o nula?
-            if (resenaForCreate.ResenaItems == null || resenaForCreate.ResenaItems.Count == 0)
+            if (resenaForCreate.ResenaItems.Count == 0)
                 // "ModelState.AddModelError" es el almacén de errores de ASP.NET. Añadimos un error manual al saco.
                 ModelState.AddModelError("ResenaItems", "¡Error! Debes seleccionar al menos un libro para hacer la reseña.");
 
