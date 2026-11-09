@@ -97,6 +97,10 @@ namespace AppForSEII.UT.SubastasController_test
             // 5. Error: Libro no disponible (Le pasamos un título de libro que no existe en la BD de prueba)
             var itemsLibroFalso = new List<SubastaItemDTO> { new SubastaItemDTO(1, "LibroFalso", _libroAutor, _editorial, 25.50m, "Descripción válida") };
             var subastaLibroFalso = new SubastaForCreateDTO(_userName, _nombre, _apellidos, _telefono, 1, itemsLibroFalso);
+
+
+            var subastaNombreIncorrectoPaco=new SubastaForCreateDTO(_userName,"Paco",_apellidos,_telefono,1,itemValido);
+            var subastaNombreIncorrectoPepe= new SubastaForCreateDTO(_userName,"Pepe",_apellidos,_telefono,1,itemValido);
             // Empaquetamos todo vinculando el DTO erróneo con su mensaje correspondiente.
             var todosLosCasos = new List<object[]>
         {
@@ -105,7 +109,9 @@ namespace AppForSEII.UT.SubastasController_test
             new object[] { subastaPrecioNegativo, "Error! El precio de puja para el libro 'Dune' no puede ser menor que 0." },
             new object[] { subastaUsuarioFalso, "Error! El usuario no está registrado." },
             new object[] { subastaPagoFalso, "¡Error! El método de pago seleccionado no existe." },
-            new object[] { subastaLibroFalso, "Error! El libro 'LibroFalso' no está disponible para subastar." }
+            new object[] { subastaLibroFalso, "Error! El libro 'LibroFalso' no está disponible para subastar." },
+            new object[] {subastaNombreIncorrectoPaco, "¡Error!, los Pacos y los Pepes no pueden pujar"},
+            new object[] {subastaNombreIncorrectoPepe, "¡Error!, los Pacos y los Pepes no pueden pujar"}
         };
 
             return todosLosCasos;
@@ -159,7 +165,7 @@ namespace AppForSEII.UT.SubastasController_test
             var subastaCrearDTO = new SubastaForCreateDTO(_userName, _nombre, _apellidos, _telefono, 1, itemsDTO);
 
             // Construimos a mano la respuesta exacta que ESPERAMOS que nos devuelva el controlador tras guardarlo todo.
-            var subastaEsperadaDTO = new SubastaDetailDTO(
+            var subastaEsperadaDTO = new SubastaDetailDTO(    //Mirar constructor
                 id: 1,
                 usuarioUserName: _userName,
                 nombre: _nombre,
