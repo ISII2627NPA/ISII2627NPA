@@ -22,7 +22,7 @@ namespace AppForSEII.UT.ResenasController_test
         private const string _apellidos = "Navarro";
         private const string _direccion = "Avda. España s/n, Albacete";
         private const string _telefono = "666555444";
-        private const string _tituloResena = "Mi opinión sobre estos libros";
+        private const string _tituloResena = "Resena: Mi opinión sobre estos libros";
 
         private const string _libro1Title = "Dune";
         private const string _libro1Editorial = "Minotauro";
@@ -60,12 +60,22 @@ namespace AppForSEII.UT.ResenasController_test
             var resenaUsuarioFalso = new ResenaForCreateDTO("falso@uclm.es", _nombre, _apellidos, _direccion, _telefono, _tituloResena, itemsValidos);
             var resenaLibroFalso = new ResenaForCreateDTO(_userName, _nombre, _apellidos, _direccion, _telefono, _tituloResena, 
                 new List<ResenaItemDTO> { new ResenaItemDTO(99, "LibroFalso", "Ed", "Tipo", 5, "Genial") });
+                
+
+            //------------MODIFICACION DE EXAMEN----------
+            var resenaTituloFalso = new ResenaForCreateDTO(_userName, _nombre, _apellidos, _direccion, _telefono, "Me gusta el libro", itemsValidos);
+
+
+
 
             var allTests = new List<object[]>
             { 
                 new object[] { resenaSinItems, "¡Error! Debes seleccionar al menos un libro para hacer la reseña." },
                 new object[] { resenaUsuarioFalso, "¡Error! El usuario no está registrado." },
-                new object[] { resenaLibroFalso, "¡Error! El libro 'LibroFalso' no existe en el sistema." }
+                new object[] { resenaLibroFalso, "¡Error! El libro 'LibroFalso' no existe en el sistema." },
+
+                 //------------MODIFICACION DE EXAMEN----------
+                new object[] { resenaTituloFalso, "¡Error! El título de la resena debe empezar por Resena:"}
             };
 
             return allTests;
@@ -97,7 +107,7 @@ namespace AppForSEII.UT.ResenasController_test
             var mock = new Mock<ILogger<ResenasController>>();
             var controller = new ResenasController(_context, mock.Object);
 
-            var itemsNuevos = new List<ResenaItemDTO> { new ResenaItemDTO(1, _libro1Title, _libro1Editorial, _libro1Tipo, 5, "Obra maestra.") };
+            var itemsNuevos = new List<ResenaItemDTO> { new ResenaItemDTO(1, _libro1Title, _libro1Editorial, _libro1Tipo, 5, "Resena: Obra maestra.") };
             var resenaValida = new ResenaForCreateDTO(_userName, _nombre, _apellidos, _direccion, _telefono, _tituloResena, itemsNuevos);
 
             var result = await controller.CreateResena(resenaValida);
