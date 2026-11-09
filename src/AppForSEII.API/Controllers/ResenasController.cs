@@ -120,7 +120,16 @@ namespace AppForSEII.API.Controllers
         public async Task<ActionResult> CreateResena(ResenaForCreateDTO resenaForCreate) 
         {
             // --- VALIDACIONES DE NEGOCIO ---
-            
+
+
+
+            //  ---------------MODIFICACION EXAMEN-----------------
+            if (!resenaForCreate.Titulo.StartsWith("Resena"))
+            {
+                ModelState.AddModelError("Titulo","¡Error! El título de la resena debe empezar por Resena:");
+            }
+
+
             // Verificamos el Flujo Alternativo 1: ¿La lista de libros viene vacía o nula?
             if (resenaForCreate.ResenaItems.Count == 0)
                 // "ModelState.AddModelError" es el almacén de errores de ASP.NET. Añadimos un error manual al saco.
