@@ -111,7 +111,8 @@ namespace AppForSEII.API.Controllers
                // Apunta el error del código
                 ModelState.AddModelError("CodigoDescuento", "Error! El código de descuento debe tener entre 5 y 10 caracteres.");
             }
-
+           
+         
             // Busca en la base de datos el usuario exacto que coincide con el UserName del DTO.
             var user = await _context.ApplicationUsers.FirstOrDefaultAsync(au => au.UserName == compraForCreate.UsuarioUserName);
            
@@ -166,10 +167,14 @@ namespace AppForSEII.API.Controllers
 
             // Busca el objeto Libro real (sacado de la BD antes) que coincida con el título del DTO.
                 var libro = libros.FirstOrDefault(l => l.Titulo == item.Titulo);
+
+                   
+               
                 if (!compraForCreate.Direccion.Contains("Calle"))
                 {
                    ModelState.AddModelError("DireccionCalle", "Error! La dirección de envío debe contener la palabra Calle."); 
                 }
+
                 // Comprueba si el libro no existe, o si el cliente está pidiendo más unidades de las que hay en stock.
                 if (item.Cantidad > libro.Stock) {
                     //Apunta u nerror de stock

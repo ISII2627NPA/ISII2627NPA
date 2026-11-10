@@ -99,7 +99,10 @@ namespace AppForSEII.UT.ComprasController_test
             // 6. Error: Stock insuficiente (Intentamos comprar 10, pero solo metimos 5 en el constructor)
             var itemsSinStock = new List<CompraItemDTO>() { new CompraItemDTO(1, _libro1Title, _libro1Genero, _editorial, 10, 10.0m) };
             var compraSinStock = new CompraForCreateDTO(_userName, _nombre, _apellidos, _direccion, _telefono, 1, null, itemsSinStock);
+
+  
             var compraDireccion= new CompraForCreateDTO(_userName, _nombre, _apellidos, "Avenida de España", _telefono, 1, null, compraItemsValidos);
+
 
             // --- EMPAQUETADO ---
             // Unimos el DTO tramposo con la frase exacta que debe devolver tu controlador
@@ -112,7 +115,11 @@ namespace AppForSEII.UT.ComprasController_test
                 new object[] { compraDescuentoLargo, "Error! El código de descuento debe tener entre 5 y 10 caracteres." }, 
                 new object[] { compraMetodoPagoInvalido, "Error! El método de pago especificado no existe." },
                 new object[] { compraSinStock, $"Error! El libro '{_libro1Title}' no está disponible en la cantidad solicitada" },
+
+               
+               
                 new object[]{compraDireccion,"Error! La dirección de envío debe contener la palabra Calle."},
+
             };
 
             return allTests;

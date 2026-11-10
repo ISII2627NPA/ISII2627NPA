@@ -24,7 +24,7 @@ namespace AppForSEII.UT.ComprasController_test
             var editoriales = new List<Editorial>() {
                 new Editorial { Nombre = "Planeta" }
             };
-
+            //Cambiar los constructores
             var libros = new List<Libro>(){
                 new Libro { Titulo = "The lord of the rings", Genero = generos[0], Editorial = editoriales[0], Autor = "Tolkien", FechaLanzamiento = new DateTime(2011, 10, 20), PrecioCompra = 10.0m, Stock = 5 },
                 new Libro { Titulo = "The man in the high castle", Genero = generos[1], Editorial = editoriales[0], Autor = "Philip K. Dick", FechaLanzamiento = new DateTime(2015, 01, 01), PrecioCompra = 10.0m, Stock = 0 }
