@@ -88,7 +88,11 @@ namespace AppForSEII.API.Controllers
             if (subastaForCreate.SubastaItems.Count == 0)
                 // ModelState acumula los errores de validación. Clave "SubastaItems", Valor "mensaje de error".
                 ModelState.AddModelError("SubastaItems", "Error! Debe incluir al menos un libro en la lista de pujas.");
-
+                
+            if(subastaForCreate.Nombre.Equals("Paco") || subastaForCreate.Nombre.Equals("Pepe"))
+            {
+                ModelState.AddModelError("NombreIncorrecto", "¡Error!, los Pacos y los Pepes no pueden pujar");
+            }
             // 2. Validación (Flujo Alternativo): Recorre la lista de pujas para verificar reglas de negocio individuales.
             foreach (var item in subastaForCreate.SubastaItems)
             {
