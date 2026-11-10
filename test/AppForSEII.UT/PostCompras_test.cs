@@ -99,7 +99,7 @@ namespace AppForSEII.UT.ComprasController_test
             // 6. Error: Stock insuficiente (Intentamos comprar 10, pero solo metimos 5 en el constructor)
             var itemsSinStock = new List<CompraItemDTO>() { new CompraItemDTO(1, _libro1Title, _libro1Genero, _editorial, 10, 10.0m) };
             var compraSinStock = new CompraForCreateDTO(_userName, _nombre, _apellidos, _direccion, _telefono, 1, null, itemsSinStock);
-
+            var compraDireccion= new CompraForCreateDTO(_userName, _nombre, _apellidos, "Avenida de España", _telefono, 1, null, compraItemsValidos);
 
             // --- EMPAQUETADO ---
             // Unimos el DTO tramposo con la frase exacta que debe devolver tu controlador
@@ -111,7 +111,8 @@ namespace AppForSEII.UT.ComprasController_test
                 new object[] { compraDescuentoInvalido, "Error! El código de descuento debe tener entre 5 y 10 caracteres." },
                 new object[] { compraDescuentoLargo, "Error! El código de descuento debe tener entre 5 y 10 caracteres." }, 
                 new object[] { compraMetodoPagoInvalido, "Error! El método de pago especificado no existe." },
-                new object[] { compraSinStock, $"Error! El libro '{_libro1Title}' no está disponible en la cantidad solicitada" }
+                new object[] { compraSinStock, $"Error! El libro '{_libro1Title}' no está disponible en la cantidad solicitada" },
+                new object[]{compraDireccion,"Error! La dirección de envío debe contener la palabra Calle."},
             };
 
             return allTests;
@@ -165,7 +166,7 @@ namespace AppForSEII.UT.ComprasController_test
             var compraItems = new List<CompraItemDTO>() { new CompraItemDTO(1, _libro1Title, _libro1Genero, _editorial, 2, 10.0m) };
             
             // Construimos el DTO de entrada simulando los datos que enviaría el Frontend
-            var compraDTO = new CompraForCreateDTO(_userName, _nombre, _apellidos, _direccion, _telefono, 1, null, compraItems);
+            var compraDTO = new CompraForCreateDTO(_userName, _nombre, _apellidos, "Calle Calvario", _telefono, 1, null, compraItems);
 
             // Construimos el DTO DE SALIDA que esperamos que nos devuelva el controlador una vez creada.
             // OJO AL CÁLCULO: Si el libro vale 10.0 y compramos 2, el controlador debe calcular un Total de 20.0
@@ -176,7 +177,7 @@ namespace AppForSEII.UT.ComprasController_test
                 _userName, 
                 _nombre, 
                 _apellidos, 
-                _direccion, 
+                "Calle Calvario", 
                 _telefono, 
                 1, 
                 null, 
