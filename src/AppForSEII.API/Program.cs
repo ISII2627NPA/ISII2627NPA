@@ -1,9 +1,11 @@
 using Microsoft.Data.Sqlite;
 using System.Data.Common;
+using TodoApi.Logging;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+builder.Logging.AddRabbitMQ(builder.Configuration.GetSection("RabbitMQ")); 
 
 builder.Services.AddControllers()
 //show definitions of enums as strings
