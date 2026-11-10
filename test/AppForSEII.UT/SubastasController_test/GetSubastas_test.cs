@@ -80,7 +80,7 @@ namespace AppForSEII.UT.SubastasController_test
             // que sabemos que están en la base de datos de prueba y que el controlador debería devolvernos.
             var itemSubastaEsperado = new SubastaItemDTO(1, "Dune", "Frank Herbert", "Minotauro", 25.50m, "Puja inicial por Dune");
             
-            var detalleSubastaEsperado = new SubastaDetailDTO(
+            var detalleSubastaEsperado = new SubastaDetailDTO(    //Mirar
                 id: 1,   // Sabemos que es el ID 1 porque es el primer y único elemento insertado.
                 usuarioUserName: "peter.jackson@uclm.es",
                 nombre: "Peter",
