@@ -6,8 +6,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
-
-// Referencias a tu proyecto principal de la API
 using AppForSEII.API.Controllers;
 using AppForSEII.API.DTOs;
 using AppForSEII.API.Models;
@@ -16,32 +14,45 @@ namespace AppForSEII.UT.ResenasController_test
 {
     public class CreateResenas_test : AppForSEII4SqliteUT
     {
-        // --- CONSTANTES PARA LOS DATOS DE PRUEBA ---
         private const string _userName = "elena.navarro@uclm.es";
         private const string _nombre = "Elena";
         private const string _apellidos = "Navarro";
         private const string _direccion = "Avda. España s/n, Albacete";
         private const string _telefono = "666555444";
-        private const string _tituloResena = "Resena: Mi opinión sobre estos libros";
+        private const string _tituloResena = "Reseña: Mi opinión sobre estos libros";
 
         private const string _libro1Title = "Dune";
         private const string _libro1Editorial = "Minotauro";
         private const string _libro1Tipo = "Bolsillo";
         
-        // CONSTRUCTOR: Prepara la BD en memoria antes de CADA test
         public CreateResenas_test()
         {
-            var user = new ApplicationUser { Id = "1", UserName = _userName, Email = _userName, Nombre = _nombre, Apellidos = _apellidos, Direccion = _direccion, Telefono = _telefono };
-            var genero = new Genero { Nombre = "Ciencia Ficción" };
-            var editorial = new Editorial { Nombre = _libro1Editorial };
-            
-            // Creamos el libro con una nota media inicial de 4.0
-            var libro = new Libro { Id = 1, Titulo = _libro1Title, Autor = "Frank Herbert", TipoLibro = _libro1Tipo, CalificacionMedia = 4.0m, FechaLanzamiento = new DateTime(1965, 8, 1), Genero = genero, Editorial = editorial };
+            var user = new ApplicationUser(_nombre, _apellidos, _direccion, _telefono);
+            user.Id = "1";
+            user.UserName = _userName;
+            user.Email = _userName;
 
-            // Añadimos la reseña antigua al historial para simular ese 4.0 previo
-            var resenaPrevia = new Resena { Id = 1, Usuario = user, FechaResena = DateTime.Now, Titulo = "Reseña antigua" };
-            var resenaItemPrevio = new ResenaItem { LibroId = 1, ResenaId = 1, Calificacion = 4, Descripcion = "Muy buen libro" };
-            libro.ResenaItems = new List<ResenaItem> { resenaItemPrevio };
+            var genero = new Genero("Ciencia Ficción");
+            genero.Id = 1;
+
+            var editorial = new Editorial(_libro1Editorial);
+            editorial.Id = 1;
+            
+            var libro = new Libro(_libro1Title, "Frank Herbert", new DateTime(1965, 8, 1), 20m, 10, editorial.Id, genero.Id, _libro1Tipo, 4.0m);
+            libro.Id = 1;
+            libro.Genero = genero;
+            libro.Editorial = editorial;
+            libro.ResenaItems = new List<ResenaItem>();
+
+            var resenaPrevia = new Resena(user.Id, DateTime.Now, "Reseña antigua");
+            resenaPrevia.Id = 1;
+            resenaPrevia.Usuario = user;
+
+            var resenaItemPrevio = new ResenaItem("Muy buen libro", 4, libro.Id, resenaPrevia.Id);
+            resenaItemPrevio.Libro = libro;
+            resenaItemPrevio.Resena = resenaPrevia;
+            
+            libro.ResenaItems.Add(resenaItemPrevio);
 
             _context.Users.Add(user);
             _context.Generos.Add(genero);
@@ -51,7 +62,6 @@ namespace AppForSEII.UT.ResenasController_test
             _context.SaveChanges();
         }
 
-        // --- ORIGEN DE DATOS PARA LOS CASOS DE ERROR ---
         public static IEnumerable<object[]> TestCasesFor_CreateResena()
         {
             var itemsValidos = new List<ResenaItemDTO> { new ResenaItemDTO(1, _libro1Title, _libro1Editorial, _libro1Tipo, 5, "Me ha encantado.") };
@@ -60,28 +70,20 @@ namespace AppForSEII.UT.ResenasController_test
             var resenaUsuarioFalso = new ResenaForCreateDTO("falso@uclm.es", _nombre, _apellidos, _direccion, _telefono, _tituloResena, itemsValidos);
             var resenaLibroFalso = new ResenaForCreateDTO(_userName, _nombre, _apellidos, _direccion, _telefono, _tituloResena, 
                 new List<ResenaItemDTO> { new ResenaItemDTO(99, "LibroFalso", "Ed", "Tipo", 5, "Genial") });
-                
-
-            //------------MODIFICACION DE EXAMEN----------
+            
             var resenaTituloFalso = new ResenaForCreateDTO(_userName, _nombre, _apellidos, _direccion, _telefono, "Me gusta el libro", itemsValidos);
-
-
-
 
             var allTests = new List<object[]>
             { 
                 new object[] { resenaSinItems, "¡Error! Debes seleccionar al menos un libro para hacer la reseña." },
                 new object[] { resenaUsuarioFalso, "¡Error! El usuario no está registrado." },
                 new object[] { resenaLibroFalso, "¡Error! El libro 'LibroFalso' no existe en el sistema." },
-
-                 //------------MODIFICACION DE EXAMEN----------
-                new object[] { resenaTituloFalso, "¡Error! El título de la resena debe empezar por Resena:"}
+                new object[] { resenaTituloFalso, "¡Error! El título de la reseña debe empezar por Reseña:"}
             };
 
             return allTests;
         }
 
-        // --- TEST DE ERRORES ---
         [Theory]
         [Trait("LevelTesting", "Unit Testing")]
         [MemberData(nameof(TestCasesFor_CreateResena))]
@@ -99,7 +101,6 @@ namespace AppForSEII.UT.ResenasController_test
             Assert.StartsWith(errorExpected, errorActual);
         }
 
-        // --- TEST DE ÉXITO ---
         [Fact]
         [Trait("LevelTesting", "Unit Testing")]
         public async Task CreateResena_Success_test()
@@ -115,9 +116,20 @@ namespace AppForSEII.UT.ResenasController_test
             var createdResult = Assert.IsType<CreatedAtActionResult>(result);
             var actualResenaDetailDTO = Assert.IsType<ResenaDetailDTO>(createdResult.Value);
 
-            Assert.Equal(_tituloResena, actualResenaDetailDTO.Titulo);
+            var expectedDetailDTO = new ResenaDetailDTO(
+                actualResenaDetailDTO.Id, 
+                actualResenaDetailDTO.FechaResena, 
+                _userName, 
+                _nombre, 
+                _apellidos, 
+                _direccion, 
+                _telefono, 
+                _tituloResena, 
+                itemsNuevos
+            );
+
+            Assert.Equal(expectedDetailDTO, actualResenaDetailDTO);
             
-            // Verificamos el cálculo de la nota media (4.0 previo + 5.0 nuevo = 4.5)
             var libroActualizado = _context.Libros.First(l => l.Titulo == _libro1Title);
             Assert.Equal(4.5m, libroActualizado.CalificacionMedia);
         }
