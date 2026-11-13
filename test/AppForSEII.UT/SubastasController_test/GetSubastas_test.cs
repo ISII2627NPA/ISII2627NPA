@@ -81,15 +81,15 @@ namespace AppForSEII.UT.SubastasController_test
             var itemSubastaEsperado = new SubastaItemDTO(1, "Dune", "Frank Herbert", "Minotauro", 25.50m, "Puja inicial por Dune");
             
             var detalleSubastaEsperado = new SubastaDetailDTO(    //Mirar
-                1,   // Sabemos que es el ID 1 porque es el primer y único elemento insertado.
-                "peter.jackson@uclm.es",
-                "Peter",
-                "Jackson",
-                "666555444",
-                DateTime.Today,
-                25.50m,
-                1,
-                new List<SubastaItemDTO> { itemSubastaEsperado }   // Metemos el item en la lista.
+                id: 1,   // Sabemos que es el ID 1 porque es el primer y único elemento insertado.
+                usuarioUserName: "peter.jackson@uclm.es",
+                nombre: "Peter",
+                apellidos: "Jackson",
+                telefono: "666555444",
+                fechaSubasta: DateTime.Today,
+                precioSubasta: 25.50m,
+                metodoPago: 1,
+                subastaItems: new List<SubastaItemDTO> { itemSubastaEsperado }   // Metemos el item en la lista.
             );
 
             // ACT (Actuar): Simulamos la petición del cliente llamando al endpoint pasando el ID = 1.

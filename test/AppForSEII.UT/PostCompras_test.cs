@@ -30,23 +30,21 @@ namespace AppForSEII.UT.ComprasController_test
 
         public PostCompras_test()
         {
-           // 2. CONSTRUCTOR: Creamos la base de datos de prueba
-            // Creamos Géneros y Editoriales asignando su Id explícitamente
-            var genero1 = new Genero { Id = 1, Nombre = _libro1Genero };
-            var genero2 = new Genero { Id = 2, Nombre = _libro2Genero };
-            var editorial1 = new Editorial { Id = 1, Nombre = _editorial };
+            // 2. CONSTRUCTOR: Creamos la base de datos de prueba
+            var generos = new List<Genero>() {
+                new Genero(_libro1Genero),
+                new Genero(_libro2Genero)
+            };
 
-            // Guardamos PRIMERO estas entidades base en la BD y hacemos SaveChanges
-            _context.Generos.AddRange(genero1, genero2);
-            _context.Editoriales.Add(editorial1);
-            _context.SaveChanges();
+            var editoriales = new List<Editorial>() {
+                new Editorial(_editorial)
+            };
 
-            // Metemos los libros con el constructor estricto. ¡Ojo al stock! El primer libro tiene 5, el segundo tiene 0.
-            // Pasamos los IDs (editorial1.Id, genero1.Id) en lugar del objeto completo.
-            var libro1 = new Libro(_libro1Title, "Tolkien", new DateTime(2011, 10, 20), 10.0m, 5, editorial1.Id, genero1.Id, "Bolsillo", 4.5m) { Id = 1 };
-            
-            var libro2 = new Libro(_libro2Title, "Philip K. Dick", new DateTime(2015, 01, 01), 10.0m, 0, editorial1.Id, genero2.Id, "Bolsillo", 4.5m) { Id = 2 };
-           
+            // Metemos los libros. ¡Ojo al stock! El primer libro tiene 5, el segundo tiene 0.
+            var libros = new List<Libro>(){
+                new Libro { Titulo = _libro1Title, Genero = generos[0], Editorial = editoriales[0], Autor = "Tolkien", FechaLanzamiento = new DateTime(2011, 10, 20), PrecioCompra = 10.0m, Stock = 5 },
+                new Libro { Titulo = _libro2Title, Genero = generos[1], Editorial = editoriales[0], Autor = "Philip K. Dick", FechaLanzamiento = new DateTime(2015, 01, 01), PrecioCompra = 10.0m, Stock = 0 }
+            };
             // Creamos un método de pago válido
             var metodoPago = new PayPal("6785849");
             metodoPago.Id = 1;
@@ -63,7 +61,9 @@ namespace AppForSEII.UT.ComprasController_test
 
             // Guardamos todo en la base de datos SQLite en memoria
             _context.ApplicationUsers.Add(user);
-            _context.AddRange(libro1,libro2);
+            _context.AddRange(generos);
+            _context.AddRange(editoriales);
+            _context.AddRange(libros);
             _context.Add(metodoPago);
             _context.SaveChanges();
         }

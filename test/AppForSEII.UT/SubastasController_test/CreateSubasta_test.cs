@@ -166,15 +166,15 @@ namespace AppForSEII.UT.SubastasController_test
 
             // Construimos a mano la respuesta exacta que ESPERAMOS que nos devuelva el controlador tras guardarlo todo.
             var subastaEsperadaDTO = new SubastaDetailDTO(    //Mirar constructor
-                1,
-                _userName,
-                _nombre,
-                _apellidos,
-                _telefono,
-                DateTime.Today, // Se asume que el controlador asigna Today o Now
-                25.50m, // El controlador debe calcular el total sumando las pujas
-                1,
-                itemsDTO
+                id: 1,
+                usuarioUserName: _userName,
+                nombre: _nombre,
+                apellidos: _apellidos,
+                telefono: _telefono,
+                fechaSubasta: DateTime.Today, // Se asume que el controlador asigna Today o Now
+                precioSubasta: 25.50m, // El controlador debe calcular el total sumando las pujas
+                metodoPago: 1,
+                subastaItems: itemsDTO
             );
 
             // ACT: Llamamos al controlador simulando que el usuario acaba de pulsar "Publicar subasta".
