@@ -19,7 +19,7 @@ namespace AppForSEII.UT.ResenasController_test
         private const string _apellidos = "Navarro";
         private const string _direccion = "Avda. España s/n, Albacete";
         private const string _telefono = "666555444";
-        private const string _tituloResena = "Reseña: Mi opinión sobre estos libros";
+        private const string _tituloResena = "Resena: Mi opinión sobre estos libros";
 
         private const string _libro1Title = "Dune";
         private const string _libro1Editorial = "Minotauro";
@@ -78,7 +78,7 @@ namespace AppForSEII.UT.ResenasController_test
                 new object[] { resenaSinItems, "¡Error! Debes seleccionar al menos un libro para hacer la reseña." },
                 new object[] { resenaUsuarioFalso, "¡Error! El usuario no está registrado." },
                 new object[] { resenaLibroFalso, "¡Error! El libro 'LibroFalso' no existe en el sistema." },
-                new object[] { resenaTituloFalso, "¡Error! El título de la reseña debe empezar por Reseña:"}
+                new object[] { resenaTituloFalso, "¡Error! El título de la resena debe empezar por Resena:" }
             };
 
             return allTests;
