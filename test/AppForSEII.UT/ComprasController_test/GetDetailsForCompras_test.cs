@@ -15,20 +15,21 @@ namespace AppForSEII.UT.ComprasController_test
     {
         public GetCompras_test()
         {
-            // 1. Creamos las entidades básicas (Géneros, Editoriales y Libros)
-            var generos = new List<Genero>() {
-                new Genero { Nombre = "Sci - Fi" },
-                new Genero { Nombre = "Drama" }
-            };
+            // 1. Creamos las entidades básicas con sus Ids
+            var generoSciFi = new Genero { Id = 1, Nombre = "Sci - Fi" };
+            var generoDrama = new Genero { Id = 2, Nombre = "Drama" };
+            var editorialPlaneta = new Editorial { Id = 1, Nombre = "Planeta" };
 
-            var editoriales = new List<Editorial>() {
-                new Editorial { Nombre = "Planeta" }
-            };
-            //Cambiar los constructores
-            var libros = new List<Libro>(){
-                new Libro { Titulo = "The lord of the rings", Genero = generos[0], Editorial = editoriales[0], Autor = "Tolkien", FechaLanzamiento = new DateTime(2011, 10, 20), PrecioCompra = 10.0m, Stock = 5 },
-                new Libro { Titulo = "The man in the high castle", Genero = generos[1], Editorial = editoriales[0], Autor = "Philip K. Dick", FechaLanzamiento = new DateTime(2015, 01, 01), PrecioCompra = 10.0m, Stock = 0 }
-            };
+            // 2. Las guardamos PRIMERO en la BD para asegurar que los IDs están registrados
+            _context.Generos.AddRange(generoSciFi, generoDrama);
+            _context.Editoriales.Add(editorialPlaneta);
+            _context.SaveChanges();
+
+            // 3. Cambiamos a los constructores estrictos con paréntesis como pide la profesora.
+            // Pasamos los .Id correspondientes.
+            var libro1 = new Libro("The lord of the rings", "Tolkien", new DateTime(2011, 10, 20), 10.0m, 5, editorialPlaneta.Id, generoSciFi.Id, "Bolsillo", 4.5m) { Id = 1 };
+            
+            var libro2 = new Libro("The man in the high castle", "Philip K. Dick", new DateTime(2015, 01, 01), 10.0m, 0, editorialPlaneta.Id, generoDrama.Id, "Bolsillo", 4.5m) { Id = 2 };
 
             // 2. Creamos las dependencias obligatorias de una Compra: un Método de Pago y un Usuario
             var metodoPago = new PayPal("6785849");
@@ -56,7 +57,7 @@ namespace AppForSEII.UT.ComprasController_test
 
            // 4. Añadimos el "ticket" a la compra (1 unidad de El Señor de los Anillos)
             compra.CompraItems.Add(new CompraItem { 
-                Libro = libros[0], 
+                Libro = libro1, 
                 Cantidad = 1, 
                 Compra = compra, 
                 
@@ -65,9 +66,7 @@ namespace AppForSEII.UT.ComprasController_test
             // 5. Guardamos TODO en la base de datos de prueba. 
             // Si falta el SaveChanges(), la BD estará vacía y los tests fallarán.
             _context.ApplicationUsers.Add(user);
-            _context.AddRange(generos);
-            _context.AddRange(editoriales);
-            _context.AddRange(libros);
+            _context.AddRange(libro1,libro2);
             _context.Add(metodoPago);
             _context.Add(compra);
             _context.SaveChanges();
