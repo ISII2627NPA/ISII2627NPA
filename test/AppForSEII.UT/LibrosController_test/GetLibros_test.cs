@@ -16,6 +16,7 @@ namespace AppForSEII.UT.LibrosController_test
     {
         public GetLibros_test()
         {
+
             var generos = new List<Genero>() {
                 new Genero("Ficción"),
                 new Genero("Fantasía"),
@@ -52,7 +53,36 @@ namespace AppForSEII.UT.LibrosController_test
             _context.AddRange(generos);
             _context.AddRange(editoriales);
             _context.AddRange(libros);
+
+           // 1. Creamos datos de prueba (Géneros y Editoriales) que necesitamos para los libros.
+          // 1. Creamos Géneros y Editoriales asignando su Id y Nombre con llaves
+            var generoFiccion = new Genero { Id = 1, Nombre = "Ficción" };
+            var generoFantasia = new Genero { Id = 2, Nombre = "Fantasía" };
+            var generoDrama = new Genero { Id = 3, Nombre = "Drama" };
+
+            var editorialPlaneta = new Editorial { Id = 1, Nombre = "Planeta" };
+            var editorialAnaya = new Editorial { Id = 2, Nombre = "Anaya" };
+
+            _context.Generos.AddRange(generoFiccion, generoFantasia, generoDrama);
+            _context.Editoriales.AddRange(editorialPlaneta, editorialAnaya);
+
             _context.SaveChanges();
+
+           // 3. Creamos los libros usando el constructor estricto con paréntesis dictado por la profesora.
+            // Pasamos los .Id en lugar de los objetos completos.
+            // Nota: He añadido "Bolsillo" y 4.5m al final asumiendo el formato de la clase Libro estándar.
+            var libro1 = new Libro("El Imperio Final", "Brandon Sanderson", new DateTime(2006, 7, 17), 20.0m, 10, editorialPlaneta.Id, generoFantasia.Id, "Bolsillo", 4.5m) { Id = 1 };
+            
+            var libro2 = new Libro("1984", "George Orwell", new DateTime(1949, 6, 8), 15.0m, 5, editorialAnaya.Id, generoFiccion.Id, "Bolsillo", 4.5m) { Id = 2 };
+            
+            // Libro SIN STOCK (0 unidades)
+            var libro3 = new Libro("Hamlet", "William Shakespeare", new DateTime(1609, 1, 1), 10.0m, 0, editorialPlaneta.Id, generoDrama.Id, "Bolsillo", 4.5m) { Id = 3 };
+
+            // 4. Guardamos los libros en la base de datos de prueba en memoria
+            _context.Libros.AddRange(libro1, libro2, libro3);
+          
+            // 3. Guardamos todo en la base de datos de prueba en memoria (_context)
+             _context.SaveChanges();
         }
 
         public static IEnumerable<object[]> TestCasesFor_GetLibrosParaComprar_OK()
