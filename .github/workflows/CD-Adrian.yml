@@ -1,9 +1,7 @@
 name: Build and deploy to Azure Web App Adrian
 
 on:
-  push:
-    branches:
-      - 'development'
+  pull_request:
   workflow_dispatch:
 
 jobs:
