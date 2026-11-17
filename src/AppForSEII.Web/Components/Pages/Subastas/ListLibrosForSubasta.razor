@@ -1,0 +1,167 @@
+@page "/subastas/listlibrosforsubasta"
+@using AppForSEII.Web.API
+@inject NavigationManager navigation
+@inject SubastaStateContainer subastaState
+@inject IAppForSEIIAPIClient API 
+
+<!-- 1. CONTENEDOR PRINCIPAL -->
+<div class="container">
+    <h3 class="mb-4">Seleccionar Libros para Subastar</h3>
+
+    <!-- 2. FILA DE FILTROS (Flujo Alternativo 1) -->
+    <div class="row mb-4">
+        <div class="col-md-5">
+            <input class="form-control" placeholder="Filtrar por título..." @bind="filtroTitulo" />
+        </div>
+        <div class="col-md-5">
+            <input class="form-control" placeholder="Filtrar por editorial..." @bind="filtroEditorial" />
+        </div>
+        <div class="col-md-2">
+            <button class="btn btn-secondary w-100" @onclick="BuscarLibros">Buscar</button>
+        </div>
+    </div>
+
+    <!-- Mensaje de aviso si no hay libros (Flujo Alternativo 0) -->
+    @if (mensajeError != null)
+    {
+        <div class="alert alert-warning">@mensajeError</div>
+    }
+
+    <!-- 3. FILA PRINCIPAL: Dividida en 8 (Tabla) y 4 (Carrito) -->
+    <div class="row">
+        
+        <!-- 3a. COLUMNA IZQUIERDA (Ocupa 8/12) - Lista de Libros -->
+        <div class="col-md-8">
+            <table class="table table-hover table-striped">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Título</th>
+                        <th>Autor</th>
+                        <th>Editorial</th>
+                        <th>Tipo</th>
+                        <th>Acción</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (libros == null)
+                    {
+                        <tr><td colspan="5">Cargando libros...</td></tr>
+                    }
+                    else if (!libros.Any())
+                    {
+                        <tr><td colspan="5">No se encontraron libros disponibles.</td></tr>
+                    }
+                    else
+                    {
+                        @foreach (var libro in libros)
+                        {
+                            <tr>
+                                <td>@libro.Titulo</td>
+                                <td>@libro.Autor</td>
+                                <td>@libro.Editorial</td>
+                                <td>@libro.TipoLibro</td>
+                                <td>
+                                    <button class="btn btn-sm btn-success" @onclick="() => AddLibro(libro)">Añadir</button>
+                                </td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <!-- 3b. COLUMNA DERECHA (Ocupa 4/12) - Carrito de Pujas -->
+        <div class="col-md-4">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="card-title mb-0">Libros seleccionados</h5>
+                </div>
+                
+                <ul class="list-group list-group-flush">
+                    @if (!subastaState.Subasta.SubastaItems.Any())
+                    {
+                        <li class="list-group-item text-muted">Aún no has añadido ningún libro.</li>
+                    }
+                    else
+                    {
+                        @foreach (var item in subastaState.Subasta.SubastaItems)
+                        {
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                @item.Titulo
+                                <button class="btn btn-sm btn-outline-danger" @onclick="() => RemoveLibro(item)">X</button>
+                            </li>
+                        }
+                    }
+                </ul>
+
+                <div class="card-body">
+                    <!-- Flujo Alternativo 4: Aviso si intenta pujar con carrito vacío -->
+                    @if (errorCarrito != null)
+                    {
+                        <div class="alert alert-danger p-2 mb-3"><small>@errorCarrito</small></div>
+                    }
+                    
+                    <button class="btn btn-primary w-100 fw-bold" @onclick="IrAPujar">Continuar a Pujar</button>
+                </div>
+            </div>
+        </div>
+        
+    </div>
+</div>
+
+@code {
+    // Fíjate que aquí ya usamos el DTO correcto
+    private ICollection<LibroParaSubastarDTO> libros;
+    private string filtroTitulo = "";
+    private string filtroEditorial = "";
+    private string mensajeError = null;
+    private string errorCarrito = null;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await BuscarLibros();
+    }
+
+    private async Task BuscarLibros()
+    {
+        mensajeError = null;
+        try
+        {
+            // Ajusta el nombre de este método ('GetLibrosAsync') al que haya generado tu NSwag en el cliente
+            libros = await API.GetLibrosParaSubastarAsync(filtroTitulo, filtroEditorial);
+            
+            if (libros == null || !libros.Any())
+            {
+                mensajeError = "No hay stock de libros o no coinciden con los filtros.";
+            }
+        }
+        catch (Exception ex)
+        {
+            mensajeError = "Error al conectar con la API para obtener los libros.";
+        }
+    }
+
+    private void AddLibro(LibroParaSubastarDTO libro)
+    {
+        subastaState.AddLibroToSubasta(libro);
+        errorCarrito = null; // Si añade un libro, quitamos el error del carrito si lo hubiera
+    }
+
+    private void RemoveLibro(SubastaItemDTO item)
+    {
+        subastaState.RemoveLibroFromSubasta(item);
+    }
+
+    private void IrAPujar()
+    {
+        // Flujo Alternativo 4: Validar que haya libros seleccionados
+        if (!subastaState.Subasta.SubastaItems.Any())
+        {
+            errorCarrito = "Debes añadir al menos un libro a la lista de pujas.";
+            return;
+        }
+        
+        // Vamos a la siguiente pantalla (que crearás más adelante)
+        navigation.NavigateTo("/subastas/createsubasta");
+    }
+}
