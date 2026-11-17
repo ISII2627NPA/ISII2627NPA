@@ -24,7 +24,7 @@
         <div class="d-flex justify-content-between">
             <div><b>Libros Seleccionados:</b> @carrito.CompraItems.Count</div>
             <div >
-                <button class="btn btn-outline-primary" id="showRentingCart" @onclick="@ToggleCarrito">Carrito de Compra: @carritoState.Compra.PrecioTotal €</button>
+                <button class="btn btn-outline-primary" id="showRentingCart" @onclick="@ToggleCarrito">Carrito de Compra: @carritoState.Compra.PrecioTotal.ToString("0.00") €</button>
             </div> 
             <button class="btn btn-primary" id="Rent" @onclick="@ComprarLibros" disabled="@compraButtonDisabled">Comprar libros</button>
         </div>
@@ -147,8 +147,7 @@
     {
         try
         {
-            // OJO: Si no tienes este método creado en la API, coméntalo e inicializa la lista vacía
-            // generosNombres = await apiservice.GetGenerosAsync(null); 
+            // TODO: Sustituir por la llamada a la API (GetGenerosAsync) cuando el backend lo implemente.
             if (generosNombres == null || !generosNombres.Any()) 
             {
                 generosNombres = new List<string>() { "Fantasía", "Terror", "Aventura" }; 

@@ -30,13 +30,14 @@ namespace AppForSEII.Web
                 }
             );
             
-            // Llamamos al cálculo exactamente igual que en Movies
+            
             ComputeTotalPrice(); 
+            NotifyStateChanged();
         }
 
         private void ComputeTotalPrice()
         {
-            // Multiplicamos la cantidad por el precio (en Movies multiplicaban por los días)
+            // Multiplicamos la cantidad por el precio 
             Compra.PrecioTotal = Compra.CompraItems.Sum(ci => ci.PrecioCompra * ci.Cantidad);
         }
 
@@ -44,16 +45,19 @@ namespace AppForSEII.Web
         {
             Compra.CompraItems.Remove(item);
             
-            // Llamamos al cálculo exactamente igual que en Movies
+            
             ComputeTotalPrice();
+            
+            NotifyStateChanged(); 
         }
 
         public void ClearCompraCart()
         {
             Compra.CompraItems.Clear();
             
-            // Forzamos el precio a 0 exactamente igual que en Movies
+            
             Compra.PrecioTotal = 0; 
+            NotifyStateChanged();
         }
 
         public void CompraProcessed()
@@ -61,7 +65,9 @@ namespace AppForSEII.Web
             Compra = new CompraForCreateDTO()
             {
                 CompraItems = new List<CompraItemDTO>()
-            };
+            }; 
+            
+            NotifyStateChanged(); 
         }
     }
 }
