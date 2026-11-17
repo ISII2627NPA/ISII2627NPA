@@ -1,6 +1,8 @@
 @page "/resenas/listlibros"
 @using AppForSEII.Web.API
 @implements IDisposable
+@using Microsoft.AspNetCore.Authorization
+@attribute [Authorize]
 
 @* Inyectamos dependencias *@
 @inject IAppForSEIIAPIClient API
