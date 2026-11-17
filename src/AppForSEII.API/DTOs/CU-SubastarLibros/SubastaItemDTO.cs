@@ -42,7 +42,7 @@ namespace AppForSEII.API.DTOs
         // el ModelState del controlador será inválido y devolverá un BadRequest automáticamente.
         [Required(ErrorMessage = "El precio de la puja es obligatorio")]
         // Asegura que el precio de la puja no pueda ser 0 ni negativo (va de 0.01 hasta el valor máximo posible de un double).
-        [Range(0.01, double.MaxValue, ErrorMessage = "El precio de puja debe ser mayor que 0")]
+        [Range(0.01, 1000, ErrorMessage = "El precio de puja debe ser mayor que 0")]
         public decimal PrecioPuja { get; set; }
         // El '?' indica que este string puede ser nulo (la descripción es opcional según el caso de uso).
         // Sin embargo, si el usuario decide rellenarla, se fuerza a que tenga un tamaño estricto de entre 20 y 100 caracteres.

@@ -52,7 +52,7 @@ namespace AppForSEII.API.DTOs
         // El que de verdad valida y bloquea números negativos es el [Range]
         [Required]
         [DataType(System.ComponentModel.DataAnnotations.DataType.Currency)]
-        [Range(1, float.MaxValue, ErrorMessage = "El precio mínimo es 1")]
+        [Range(1, 1000, ErrorMessage = "El precio mínimo es 1")]
         public double PrecioCompra { get; set; } = 1;
 
         [Required]
