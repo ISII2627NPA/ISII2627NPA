@@ -1,0 +1,191 @@
+@page "/compras/listlibros"
+@using AppForSEII.Web.API
+@using Microsoft.AspNetCore.Authorization
+
+@inject ILogger<ListLibrosParaComprar> logger
+@inject IAppForSEIIAPIClient apiservice
+@inject CompraStateContainer carritoState
+@inject NavigationManager navigation
+
+
+ @attribute [Authorize] 
+
+<h3>Seleccionar Libros para Comprar</h3>
+<div class="container-fluid">
+
+    <div class="row">
+        @if (!string.IsNullOrEmpty(messageError))
+        {
+            <div class="row alert alert-danger" role="alert" id="MessageError">
+                @messageError
+            </div>
+        }
+        
+        <div class="d-flex justify-content-between">
+            <div><b>Libros Seleccionados:</b> @carrito.CompraItems.Count</div>
+            <div >
+                <button class="btn btn-outline-primary" id="showRentingCart" @onclick="@ToggleCarrito">Carrito de Compra: @carritoState.Compra.PrecioTotal €</button>
+            </div> 
+            <button class="btn btn-primary" id="Rent" @onclick="@ComprarLibros" disabled="@compraButtonDisabled">Comprar libros</button>
+        </div>
+    </div>
+
+    <div class="row">
+        <p></p>
+        <h5>Filtrar Libros</h5>
+        <div class="input-group">
+                <div class="input-group-prepend">
+                    <span class="input-group-text">Género</span>
+                </div>
+                <select class="form-select" aria-label="Default select" @bind="libroGeneroSeleccionado" id="selectGenre">
+                    <option value="All" selected>All</option>
+                    @foreach (string genreName in generosNombres)
+                    {
+                        <option value="@genreName" id="genreNameSelected_@genreName">@genreName</option>
+                    }
+                </select>
+
+                <div class="input-group-prepend">
+                    <span class="input-group-text">Precio Máx (€)</span>
+                </div>
+                <input type="number" step="0.1" class="form-control" @bind="precioMaximo" id="precioMaximo">
+
+                <div class="input-group-append">
+                    <button class="btn btn-outline-primary" id="searchMovies" @onclick="@SearchLibros">Buscar libros disponibles</button>
+                </div>
+        </div>
+    </div>
+
+    <div class="d-flex justify-content-between">
+        <div class="container-fluid ">
+            @if (libros.Count() == 0)
+            {
+                <p><em>No hay libros disponibles con los filtros actuales</em></p>
+            }
+            else
+            {
+                <div class="mh-100 table-responsive">
+                    <table class="table table-condensed table-hover" id="TableOfMovies">
+                        <thead>
+                            <tr>
+                                <th>Título</th>
+                                <th>Género</th>
+                                <th>Editorial</th>
+                                <th>Precio Compra</th>
+                                <th>Acción</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var libro in libros)
+                            {
+                                <tr id="MovieData_@libro.Titulo">
+                                    <td>@libro.Titulo</td>
+                                    <td>@libro.Genero</td>
+                                    <td>@libro.Editorial</td>
+                                    <td>@libro.PrecioCompra</td>
+                                    <td>
+                                        <button class="btn btn-outline-secondary" id="movieToRent_@libro.Titulo" @onclick="@(()=>AddLibro(libro))">Añadir</button>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+        </div>
+        
+        @if(showCarritoCart)
+        {
+            <div class="col-md-3">
+                <div class="d-grid gap-2">
+                <h4>Tu Carrito</h4>    
+                @foreach (CompraItemDTO item in carrito.CompraItems)
+                {
+                    <button type="button" class="btn btn-outline-secondary" id="MovieSelected_@item.Titulo" @onclick="@(() => RemoveCompraItem(item))">@item.Titulo (@item.PrecioCompra €)</button>           
+                }
+                </div>
+            </div>
+        }
+    </div>
+
+</div>
+
+@code {
+    private ICollection<LibroParaComprarDTO>? libros { get; set; } = new List<LibroParaComprarDTO>();
+    
+    // Variables para filtros
+    private string? libroGenero;
+    private double? precioMaximo;
+
+    private ICollection<string>? generosNombres = new List<string>();
+    private string libroGeneroSeleccionado = "All";
+
+    // Acceso al carrito
+    private CompraForCreateDTO carrito => carritoState.Compra;
+
+    private string messageError = "";
+    private bool compraButtonDisabled { get { return carrito.CompraItems.Count == 0; } }
+    private bool showCarritoCart = false;
+    
+    private void ToggleCarrito()
+    {
+        showCarritoCart = !showCarritoCart;
+    }
+
+    private void AddLibro(LibroParaComprarDTO libro)
+    {
+        carritoState.AddLibroToCompra(libro, 1);
+    }
+
+    private void RemoveCompraItem(CompraItemDTO item)
+    {
+        carritoState.RemoveCompraItemToCompra(item);
+        if (carrito.CompraItems.Count == 0) showCarritoCart = true;
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            // OJO: Si no tienes este método creado en la API, coméntalo e inicializa la lista vacía
+            // generosNombres = await apiservice.GetGenerosAsync(null); 
+            if (generosNombres == null || !generosNombres.Any()) 
+            {
+                generosNombres = new List<string>() { "Fantasía", "Terror", "Aventura" }; 
+            }
+        }
+        catch (ApiException ex)
+        {
+            if (generosNombres == null) generosNombres = new List<string>() { "All" };
+            logger.LogError("Error! There was an error while connecting to the GetGenerosAsync service");
+        }
+
+        // Cargamos la lista inicial
+        SearchLibros();
+    }
+
+    protected async void SearchLibros()
+    {
+        libroGenero = libroGeneroSeleccionado == "All" ? null : libroGeneroSeleccionado;
+        messageError = "";
+
+        try
+        {
+            // Parámetros exactos requeridos por tu NSwag
+            libros = await apiservice.GetLibrosParaComprarAsync(libroGenero, precioMaximo, System.Threading.CancellationToken.None);
+        }
+        catch (ApiException ex)
+        {
+            libros = new List<LibroParaComprarDTO>();
+            logger.LogError("Error! There was an error while connecting to the GetLibrosParaComprarAsync service");
+        }
+
+        // the web page is refreshed
+        StateHasChanged();
+    }
+
+    private void ComprarLibros()
+    {
+        navigation.NavigateTo("/compras/createcompra");
+    }
+}
