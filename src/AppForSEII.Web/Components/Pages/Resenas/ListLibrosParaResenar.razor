@@ -57,7 +57,9 @@
                             <th>Autor</th>
                             <th>Tipo</th>
                             <th>Género</th>
+                            <th>Editorial</th>
                             <th>Calif.</th>
+                            <th>Fecha Lanz.</th>
                             <th>Acción</th>
                         </tr>
                     </thead>
@@ -69,7 +71,9 @@
                                 <td>@libro.Autor</td>
                                 <td>@libro.TipoLibro</td>
                                 <td>@libro.Genero</td>
+                                <td>@libro.Editorial</td>
                                 <td>@libro.CalificacionMedia</td>
+                                <td>@libro.FechaLanzamiento.ToString("d")</td>
                                 <td>
                                     <button class="btn btn-sm btn-success" @onclick="() => SeleccionarLibro(libro)">Añadir</button>
                                 </td>
