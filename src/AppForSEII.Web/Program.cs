@@ -16,6 +16,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
+builder.Services.AddScoped<CompraStateContainer>();
 builder.Services.AddCascadingAuthenticationState();
 builder.Services.AddScoped<IdentityRedirectManager>();
 builder.Services.AddScoped<AuthenticationStateProvider, IdentityRevalidatingAuthenticationStateProvider>();
@@ -81,7 +82,12 @@ builder.Services.AddScoped<IAppForSEIIAPIClient>(sp =>new AppForSEIIAPIClient(UR
 
 
 
+
 builder.Services.AddScoped<ResenaStateContainer>();
+
+builder.Services.AddScoped<SubastaStateContainer>();
+
+
 var app = builder.Build();
 
 
