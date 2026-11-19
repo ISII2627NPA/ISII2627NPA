@@ -1,0 +1,167 @@
+@page "/resenas/listlibros"
+@using AppForSEII.Web.API
+@implements IDisposable
+@using Microsoft.AspNetCore.Authorization
+@attribute [Authorize]
+
+@* Inyectamos dependencias *@
+@inject IAppForSEIIAPIClient API
+@inject ResenaStateContainer ResenaState
+@inject NavigationManager NavManager
+
+@* Modo interactivo para que los botones funcionen sin recargar la página *@
+@rendermode InteractiveServer
+
+<PageTitle>Reseñar Libros</PageTitle>
+
+<div class="container mt-4">
+    <h3 class="mb-4">Seleccionar Libros para Reseñar</h3>
+
+    @* SECCIÓN DE FILTROS (Flujo Alternativo 0) *@
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <div class="form-floating">
+                <input type="text" class="form-control" id="filtroTipo" @bind="filtroTipoLibro" placeholder="Ej. bolsillo" />
+                <label for="filtroTipo">Tipo de Libro</label>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="form-floating">
+                <input type="text" class="form-control" id="filtroGenero" @bind="filtroGenero" placeholder="Ej. Fantasía" />
+                <label for="filtroGenero">Género</label>
+            </div>
+        </div>
+        <div class="col-md-4 d-flex align-items-center">
+            <button class="btn btn-primary w-100 py-3" @onclick="BuscarLibros">Filtrar</button>
+        </div>
+    </div>
+
+    <div class="row">
+        @* COLUMNA IZQUIERDA: LISTA DE LIBROS *@
+        <div class="col-md-8">
+            <h4>Libros Disponibles</h4>
+            @if (libros == null)
+            {
+                <p><em>Cargando libros...</em></p>
+            }
+            else if (!libros.Any())
+            {
+                <div class="alert alert-warning">No se encontraron libros con esos filtros.</div>
+            }
+            else
+            {
+                <table class="table table-striped table-hover">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Título</th>
+                            <th>Autor</th>
+                            <th>Tipo</th>
+                            <th>Género</th>
+                            <th>Editorial</th>
+                            <th>Calif.</th>
+                            <th>Fecha Lanz.</th>
+                            <th>Acción</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var libro in libros)
+                        {
+                            <tr>
+                                <td>@libro.Titulo</td>
+                                <td>@libro.Autor</td>
+                                <td>@libro.TipoLibro</td>
+                                <td>@libro.Genero</td>
+                                <td>@libro.Editorial</td>
+                                <td>@libro.CalificacionMedia</td>
+                                <td>@libro.FechaLanzamiento.ToString("d")</td>
+                                <td>
+                                    <button class="btn btn-sm btn-success" @onclick="() => SeleccionarLibro(libro)">Añadir</button>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+        </div>
+
+        @* COLUMNA DERECHA: CARRITO DE RESEÑAS (Flujo Alternativo 2) *@
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Libros a Reseñar</h5>
+                </div>
+                <div class="card-body">
+                    @if (!ResenaState.Resena.ResenaItems.Any())
+                    {
+                        <p class="text-muted">No has seleccionado ningún libro aún.</p>
+                    }
+                    else
+                    {
+                        <ul class="list-group mb-3">
+                            @foreach (var item in ResenaState.Resena.ResenaItems)
+                            {
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <strong>@item.Titulo</strong><br/>
+                                        <small class="text-muted">@item.TipoLibro</small>
+                                    </div>
+                                    <button class="btn btn-sm btn-outline-danger" @onclick="() => EliminarLibro(item)">Quitar</button>
+                                </li>
+                            }
+                        </ul>
+                        
+                        @* El botón de continuar solo se habilita si hay libros en el carrito (Flujo Alternativo 1) *@
+                        <button class="btn btn-success w-100" @onclick="IrAHacerResena">Hacer reseña</button>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    private ICollection<LibroParaReseñarDTO>? libros;
+    private string? filtroTipoLibro;
+    private string? filtroGenero;
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Suscribir la UI a los cambios del carrito para que se actualice al instante
+        ResenaState.OnChange += StateHasChanged;
+        await BuscarLibros();
+    }
+
+    public void Dispose()
+    {
+        // Limpiar la suscripción al salir de la página
+        ResenaState.OnChange -= StateHasChanged;
+    }
+
+    private async Task BuscarLibros()
+    {
+        try
+        {
+            libros = await API.GetLibrosParaReseñarAsync(filtroTipoLibro, filtroGenero);
+        }
+        catch (Exception)
+        {
+            libros = new List<LibroParaReseñarDTO>();
+        }
+    }
+
+    private void SeleccionarLibro(LibroParaReseñarDTO libro)
+    {
+        ResenaState.AddLibroToResena(libro);
+    }
+
+    private void EliminarLibro(ResenaItemDTO item)
+    {
+        ResenaState.RemoveResenaItem(item);
+    }
+
+    private void IrAHacerResena()
+    {
+        // Navegaremos al siguiente paso más adelante. De momento, dejamos la ruta preparada.
+        NavManager.NavigateTo("/resenas/crear");
+    }
+}

@@ -6,6 +6,7 @@ using AppForSEII.Web.Components;
 using AppForSEII.Web.Components.Account;
 using AppForSEII.Web.Data;
 using AppForSEII.Web.API;
+using AppForSEII.Web;
 
 
 
@@ -15,6 +16,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
+builder.Services.AddScoped<CompraStateContainer>();
 builder.Services.AddCascadingAuthenticationState();
 builder.Services.AddScoped<IdentityRedirectManager>();
 builder.Services.AddScoped<AuthenticationStateProvider, IdentityRevalidatingAuthenticationStateProvider>();
@@ -76,9 +78,18 @@ builder.Services.AddSingleton<IEmailSender<ApplicationUser>, IdentityNoOpEmailSe
 string? URI2API = builder.Configuration.GetValue(typeof(string), "AppForSEIIAPIClient_URL") as string;
 
 //the environment variable URI2API is defined in appsettings.json
-builder.Services.AddScoped<AppForSEIIAPIClient>(sp =>new AppForSEIIAPIClient(URI2API, new HttpClient()));
+builder.Services.AddScoped<IAppForSEIIAPIClient>(sp =>new AppForSEIIAPIClient(URI2API, new HttpClient()));
+
+
+
+
+builder.Services.AddScoped<ResenaStateContainer>();
+
+builder.Services.AddScoped<SubastaStateContainer>();
+
 
 var app = builder.Build();
+
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
