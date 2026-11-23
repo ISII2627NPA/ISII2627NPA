@@ -29,5 +29,11 @@
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
   </ItemGroup>
+  <ItemGroup>
+  <Compile Remove="LogViewer\**" />
+  <Content Remove="LogViewer\**" />
+  <EmbeddedResource Remove="LogViewer\**" />
+  <None Remove="LogViewer\**" />
+</ItemGroup>
 
 </Project>

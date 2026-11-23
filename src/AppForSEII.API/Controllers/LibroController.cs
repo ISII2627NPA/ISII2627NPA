@@ -56,7 +56,7 @@ namespace AppForSEII.API.Controllers
                 // Opcional: registrar en el logger si no se encuentran libros
                 _logger.LogInformation($"{DateTime.Now} Info: No se encontraron libros para subastar con los filtros dados.");
             }
-
+            _logger.LogInformation($"Éxito: Se han devuelto {librosSeleccionados.Count} libros para subastar.");
             return Ok(librosSeleccionados);
         }
 
@@ -97,7 +97,7 @@ namespace AppForSEII.API.Controllers
                 l.Stock
             ))
             .ToListAsync();
-
+            _logger.LogInformation($"Éxito: Se han devuelto {selectLibros.Count} libros para comprar.");
              return Ok(selectLibros);
             }
 
@@ -137,7 +137,7 @@ namespace AppForSEII.API.Controllers
             {
                 _logger.LogInformation($"{DateTime.Now} Info: No se encontraron libros para reseñar con los filtros dados.");
             }
-
+            _logger.LogInformation($"Éxito: Se han devuelto {librosSeleccionados.Count} libros para reseñar.");
             return Ok(librosSeleccionados);
         }
 

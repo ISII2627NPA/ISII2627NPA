@@ -9,8 +9,8 @@ public class RabbitMQLogger : ILogger, IDisposable
 {
     private readonly string _name;
     private readonly RabbitMQLoggerConfiguration _config;
-    private IConnection _connection;
-    private readonly IChannel _channel;
+    private IConnection? _connection;
+    private IChannel? _channel;
     private BasicProperties _properties;
 
     public RabbitMQLogger(string name, RabbitMQLoggerConfiguration config)
@@ -25,8 +25,28 @@ public class RabbitMQLogger : ILogger, IDisposable
             Persistent = _config.Durable,
             ContentType = "application/json"
         };
+        InitializeAsync().GetAwaiter().GetResult();
 
-    
+
+    }
+
+    private async Task InitializeAsync()
+    {
+        var factory = new ConnectionFactory
+        {
+            HostName = _config.HostName,
+            Port = _config.Port,
+            UserName = _config.UserName,
+            Password = _config.Password
+        };
+
+        _connection = await factory.CreateConnectionAsync();
+        _channel = await _connection.CreateChannelAsync();
+
+        await _channel.ExchangeDeclareAsync(
+            exchange: _config.Exchange,
+            type: _config.ExchangeType,
+            durable: _config.Durable);
     }
 
     private static void ValidateConfiguration(RabbitMQLoggerConfiguration config)
@@ -71,6 +91,17 @@ public class RabbitMQLogger : ILogger, IDisposable
                 Message = formatter(state, exception),
                 Exception = exception?.ToString()
             };
+            // 1. Serializar el objeto a JSON y convertirlo en array de bytes
+            var jsonMessage = JsonSerializer.Serialize(logEntry);
+            var body = Encoding.UTF8.GetBytes(jsonMessage);
+
+            // 2. Publicar el mensaje en el exchange
+            _channel?.BasicPublishAsync(
+                exchange: _config.Exchange,
+                routingKey: string.Empty, // En fanout, el routing key se ignora
+                mandatory: false,
+                basicProperties: _properties,
+                body: body).GetAwaiter().GetResult();
 
         }
         catch (Exception ex)
