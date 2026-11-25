@@ -1,0 +1,127 @@
+@page "/subastas/detailsubasta"
+
+@using AppForSEII.Web.API
+@using Microsoft.AspNetCore.Authorization
+@attribute [Authorize]
+@rendermode InteractiveServer
+
+@inject IAppForSEIIAPIClient API
+@inject ILogger<DetailSubasta> logger
+
+<PageTitle>Detalle de la Subasta</PageTitle>
+
+<div class="container mt-4">
+    <h3 class="mb-4">Detalle de la Subasta</h3>
+
+    @if (!string.IsNullOrEmpty(errors))
+    {
+        <div class="alert alert-warning" role="alert" id="ErrorsShown">
+            @errors
+        </div>
+    }
+
+    @if (subasta != null)
+    {
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">Resumen de la Subasta #@subasta.Id</h5>
+            </div>
+            <div class="card-body">
+                <table class="table table-borderless table-sm mb-0">
+                    <tr>
+                        <th style="width: 25%;">Nombre del cliente</th>
+                        <td id="Nombre">@subasta.Nombre</td>
+                    </tr>
+                    <tr>
+                        <th>Apellidos del cliente</th>
+                        <td id="Apellidos">@subasta.Apellidos</td>
+                    </tr>
+                    <tr>
+                        <th>Teléfono</th>
+                        <td id="Telefono">@subasta.Telefono</td>
+                    </tr>
+                    <tr>
+                        <th>Fecha de la subasta</th>
+                        <td id="FechaSubasta">@subasta.FechaSubasta.ToString("dd/MM/yyyy")</td>
+                    </tr>
+                    <tr>
+                        <th>Libros subastados</th>
+                        <td id="ItemsCount">@(subasta.SubastaItems?.Count ?? 0)</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+
+        <h4 class="mb-3">Libros en la Subasta</h4>
+
+        <table class="table table-striped table-hover" id="LibrosSubastados">
+            <thead class="table-dark">
+                <tr>
+                    <th scope="col">Título</th>
+                    <th scope="col">Autor</th>
+                    <th scope="col">Editorial</th>
+                    <th scope="col">Descripción</th>
+                    <th scope="col" class="text-end">Precio Puja</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (subasta.SubastaItems != null)
+                {
+                    @foreach (var item in subasta.SubastaItems)
+                    {
+                        <tr id="SubastaItem_@item.LibroId">
+                            <td>@item.Titulo</td>
+                            <td>@item.Autor</td>
+                            <td>@item.Editorial</td>
+                            <td>@item.Descripcion</td>
+                            <td class="text-end">@item.PrecioPuja.ToString("0.00") €</td>
+                        </tr>
+                    }
+                }
+            </tbody>
+            <tfoot class="table-light">
+                <tr>
+                    <th scope="row" colspan="4" class="text-end">Precio Total</th>
+                    <td id="TotalPrice" class="text-end fw-bold">
+                        @subasta.PrecioTotal.ToString("0.00") €
+                    </td>
+                </tr>
+            </tfoot>
+        </table>
+    }
+</div>
+
+@code {
+    [Parameter]
+    [SupplyParameterFromQuery]
+    public int SubastaID { get; set; }
+
+    private SubastaDetailDTO? subasta;
+    private string errors = "";
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            subasta = await API.GetDetailsForSubastasAsync(SubastaID);
+            errors = "";
+        }
+        catch (ApiException ex)
+        {
+            logger.LogError($"{DateTime.Now} Error: {ex}");
+            errors = $"Error: No existe una subasta con id={SubastaID}";
+            subasta = null;
+        }
+        catch (Exception ex)
+        {
+            logger.LogError($"{DateTime.Now} Error: {ex}");
+            errors = "Error al conectar con la API para obtener los detalles de la subasta.";
+            subasta = null;
+        }
+
+        if (subasta == null && string.IsNullOrEmpty(errors))
+        {
+            errors = $"Error: No existe una subasta con id={SubastaID}";
+        }
+    }
+}
