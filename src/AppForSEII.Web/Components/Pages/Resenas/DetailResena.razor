@@ -1,0 +1,122 @@
+@page "/resenas/detailresena"
+
+@using AppForSEII.Web.API
+@using Microsoft.AspNetCore.Authorization
+@attribute [Authorize]
+@rendermode InteractiveServer
+
+@inject IAppForSEIIAPIClient API
+@inject ILogger<DetailResena> logger
+
+<PageTitle>Detalle de la Reseña</PageTitle>
+
+<div class="container mt-4">
+    <h3 class="mb-4">Detalle de la Reseña</h3>
+
+    @if (!string.IsNullOrEmpty(errors))
+    {
+        <div class="alert alert-warning" role="alert" id="ErrorsShown">
+            @errors
+        </div>
+    }
+    else if (resena == null)
+    {
+        <p><em>Cargando detalles de la reseña...</em></p>
+    }
+    else
+    {
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">Resumen de la Reseña #@resena.Id</h5>
+            </div>
+            <div class="card-body">
+                <table class="table table-borderless table-sm mb-0">
+                    <tr>
+                        <th style="width: 25%;">Título de la reseña</th>
+                        <td id="TituloResena">@resena.Titulo</td>
+                    </tr>
+                    <tr>
+                        <th>Nombre del cliente</th>
+                        <td id="Nombre">@resena.Nombre</td>
+                    </tr>
+                    <tr>
+                        <th>Apellidos del cliente</th>
+                        <td id="Apellidos">@resena.Apellidos</td>
+                    </tr>
+                    <tr>
+                        <th>Teléfono</th>
+                        <td id="Telefono">@resena.Telefono</td>
+                    </tr>
+                    <tr>
+                        <th>Fecha de la reseña</th>
+                        <td id="FechaResena">@resena.FechaResena.ToString("dd/MM/yyyy")</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+
+        <h4 class="mb-3">Libros Reseñados</h4>
+
+        <table class="table table-striped table-hover" id="LibrosResenados">
+            <thead class="table-dark">
+                <tr>
+                    <th scope="col">Título</th>
+                    <th scope="col">Editorial</th>
+                    <th scope="col">Tipo de libro</th>
+                    <th scope="col" class="text-center">Calificación</th>
+                    <th scope="col">Descripción</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (resena.ResenaItems != null)
+                {
+                    @foreach (var item in resena.ResenaItems)
+                    {
+                        <tr id="ResenaItem_@item.LibroId">
+                            <td>@item.Titulo</td>
+                            <td>@item.Editorial</td>
+                            <td>@item.TipoLibro</td>
+                            <td class="text-center">@item.Calificacion / 5</td>
+                            <td>@(string.IsNullOrWhiteSpace(item.Descripcion) ? "Sin descripción" : item.Descripcion)</td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+    }
+</div>
+
+@code {
+    [Parameter]
+    [SupplyParameterFromQuery]
+    public int ResenaID { get; set; }
+
+    private ResenaDetailDTO? resena;
+    private string errors = "";
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            resena = await API.GetDetailsForResenaAsync(ResenaID);
+            errors = "";
+        }
+        catch (ApiException ex)
+        {
+            logger.LogError(ex, "Error al obtener el detalle de la reseña {ResenaID}", ResenaID);
+            errors = $"Error: No existe una reseña con id={ResenaID}";
+            resena = null;
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error al conectar con la API para la reseña {ResenaID}", ResenaID);
+            errors = "Error al conectar con la API para obtener los detalles de la reseña.";
+            resena = null;
+        }
+
+        if (resena == null && string.IsNullOrEmpty(errors))
+        {
+            errors = $"Error: No existe una reseña con id={ResenaID}";
+        }
+    }
+}
