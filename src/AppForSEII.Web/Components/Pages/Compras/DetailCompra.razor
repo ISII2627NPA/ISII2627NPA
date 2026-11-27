@@ -49,6 +49,10 @@
                         <td id="FechaCompra">@compra.FechaCompra.ToString("dd/MM/yyyy")</td>
                     </tr>
                     <tr>
+                        <th>Método de pago</th>
+                        <td id="MetodoPago">@GetMetodoPagoNombre(compra.MetodoPagoId)</td>
+                    </tr>
+                    <tr>
                         <th>Código de descuento</th>
                         <td id="CodigoDescuento">@(string.IsNullOrWhiteSpace(compra.CodigoDescuento) ? "Ninguno" : compra.CodigoDescuento)</td>
                     </tr>
@@ -132,4 +136,12 @@
             errors = $"Error: No existe una compra con id={CompraID}";
         }
     }
+
+    private string GetMetodoPagoNombre(int metodoPagoId) => metodoPagoId switch
+    {
+        1 => "Tarjeta de Crédito",
+        2 => "PayPal",
+        3 => "Efectivo",
+        _ => $"Método #{metodoPagoId}"
+    };
 }
