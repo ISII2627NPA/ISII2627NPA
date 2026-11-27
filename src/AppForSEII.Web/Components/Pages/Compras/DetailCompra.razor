@@ -1,0 +1,147 @@
+@page "/compras/detailcompra"
+
+@using AppForSEII.Web.API
+@using Microsoft.AspNetCore.Authorization
+@attribute [Authorize]
+@rendermode InteractiveServer
+
+@inject IAppForSEIIAPIClient API
+@inject ILogger<DetailCompra> logger
+
+<PageTitle>Detalle de la Compra</PageTitle>
+
+<div class="container mt-4">
+    <h3 class="mb-4">Detalle de la Compra</h3>
+
+    @if (!string.IsNullOrEmpty(errors))
+    {
+        <div class="alert alert-warning" role="alert" id="ErrorsShown">
+            @errors
+        </div>
+    }
+
+    @if (compra != null)
+    {
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">Resumen de la Compra #@compra.Id</h5>
+            </div>
+            <div class="card-body">
+                <table class="table table-borderless table-sm mb-0">
+                    <tr>
+                        <th style="width: 25%;">Nombre del cliente</th>
+                        <td id="Nombre">@compra.Nombre</td>
+                    </tr>
+                    <tr>
+                        <th>Apellidos del cliente</th>
+                        <td id="Apellidos">@compra.Apellidos</td>
+                    </tr>
+                    <tr>
+                        <th>Dirección de envío</th>
+                        <td id="Direccion">@compra.Direccion</td>
+                    </tr>
+                    <tr>
+                        <th>Teléfono</th>
+                        <td id="Telefono">@compra.Telefono</td>
+                    </tr>
+                    <tr>
+                        <th>Fecha de la compra</th>
+                        <td id="FechaCompra">@compra.FechaCompra.ToString("dd/MM/yyyy")</td>
+                    </tr>
+                    <tr>
+                        <th>Método de pago</th>
+                        <td id="MetodoPago">@GetMetodoPagoNombre(compra.MetodoPagoId)</td>
+                    </tr>
+                    <tr>
+                        <th>Código de descuento</th>
+                        <td id="CodigoDescuento">@(string.IsNullOrWhiteSpace(compra.CodigoDescuento) ? "Ninguno" : compra.CodigoDescuento)</td>
+                    </tr>
+                    <tr>
+                        <th>Libros comprados</th>
+                        <td id="ItemsCount">@(compra.CompraItems?.Count ?? 0)</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+
+        <h4 class="mb-3">Libros en la Compra</h4>
+
+        <table class="table table-striped table-hover" id="LibrosComprados">
+            <thead class="table-dark">
+                <tr>
+                    <th scope="col">Título</th>
+                    <th scope="col">Género</th>
+                    <th scope="col">Editorial</th>
+                    <th scope="col" class="text-center">Cantidad</th>
+                    <th scope="col" class="text-end">Precio Compra</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (compra.CompraItems != null)
+                {
+                    @foreach (var item in compra.CompraItems)
+                    {
+                        <tr id="CompraItem_@item.LibroId">
+                            <td>@item.Titulo</td>
+                            <td>@item.Genero</td>
+                            <td>@item.Editorial</td>
+                            <td class="text-center">@item.Cantidad</td>
+                            <td class="text-end">@item.PrecioCompra.ToString("0.00") €</td>
+                        </tr>
+                    }
+                }
+            </tbody>
+            <tfoot class="table-light">
+                <tr>
+                    <th scope="row" colspan="4" class="text-end">Precio Total</th>
+                    <td id="TotalPrice" class="text-end fw-bold">
+                        @compra.PrecioTotal.ToString("0.00") €
+                    </td>
+                </tr>
+            </tfoot>
+        </table>
+    }
+</div>
+
+@code {
+    [Parameter]
+    [SupplyParameterFromQuery]
+    public int CompraID { get; set; }
+
+    private CompraDetailDTO? compra;
+    private string errors = "";
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            compra = await API.GetDetailsForComprasAsync(CompraID);
+            errors = "";
+        }
+        catch (ApiException ex)
+        {
+            logger.LogError($"{DateTime.Now} Error: {ex}");
+            errors = $"Error: No existe una compra con id={CompraID}";
+            compra = null;
+        }
+        catch (Exception ex)
+        {
+            logger.LogError($"{DateTime.Now} Error: {ex}");
+            errors = "Error al conectar con la API para obtener los detalles de la compra.";
+            compra = null;
+        }
+
+        if (compra == null && string.IsNullOrEmpty(errors))
+        {
+            errors = $"Error: No existe una compra con id={CompraID}";
+        }
+    }
+
+    private string GetMetodoPagoNombre(int metodoPagoId) => metodoPagoId switch
+    {
+        1 => "Tarjeta de Crédito",
+        2 => "PayPal",
+        3 => "Efectivo",
+        _ => $"Método #{metodoPagoId}"
+    };
+}
